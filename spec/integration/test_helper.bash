@@ -8,7 +8,7 @@ run_container() {
 
 run_container_with_parameters() {
   docker pull busybox
-  run docker run -i --rm -v "$PWD/bin/configo.linux-amd64":/bin/configo:ro $1 busybox $2
+  run docker run -i -v "$PWD/bin/configo.linux-amd64":/bin/configo:ro $1 busybox $2
 }
 
 assert_equal() {
