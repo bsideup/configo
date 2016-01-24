@@ -7,6 +7,7 @@ run_container() {
 }
 
 run_container_with_parameters() {
+  docker pull busybox
   run docker run -i --rm -v "$PWD/bin/configo.linux-amd64":/bin/configo:ro $1 busybox $2
 }
 
@@ -56,5 +57,5 @@ assert_failure() {
 }
 
 teardown() {
-  docker rm -f $(docker ps -q --filter "configo=true") 2>/dev/null | true 
+  docker rm -f $(docker ps -q --filter "configo=true") &>/dev/null | true 
 }
