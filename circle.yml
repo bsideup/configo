@@ -1,12 +1,17 @@
 machine:
+  pre:
+    - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.1-circleci'
+    - sudo chmod 0755 /usr/bin/docker
   services:
     - docker
 
 dependencies:
   pre:
-    - sudo add-apt-repository ppa:duggan/bats --yes
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq bats
+    - > curl -o "/tmp/v0.4.0.tar.gz" -L
+      "https://github.com/sstephenson/bats/archive/v$0.4.0.tar.gz"
+      && tar -x -z -f "/tmp/v0.4.0.tar.gz" -C /tmp/
+      && bash "/tmp/bats-0.4.0/install.sh" /usr/local
+      && rm -rf /tmp/*
 
 test:
   post:
