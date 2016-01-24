@@ -7,12 +7,9 @@ machine:
 
 dependencies:
   pre:
-    - >
-      curl -o "/tmp/v0.4.0.tar.gz" -L
-      "https://github.com/sstephenson/bats/archive/v0.4.0.tar.gz"
-      && tar -x -z -f "/tmp/v0.4.0.tar.gz" -C /tmp/
-      && bash "/tmp/bats-v0.4.0/install.sh" /usr/local
-      && rm -rf /tmp/*
+    - wget https://github.com/sstephenson/bats/archive/v0.4.0.tar.gz
+    - tar -xzf v0.4.0.tar.gz -C /tmp/
+    - /tmp/bats-v0.4.0/install.sh /usr/local
 
 test:
   post:
