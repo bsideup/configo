@@ -2,14 +2,15 @@ machine:
   pre:
     - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.1-circleci'
     - sudo chmod 0755 /usr/bin/docker
+    - sudo sed -i -e 's/ --userland-proxy=false//' /etc/default/docker
   services:
     - docker
 
 dependencies:
   pre:
-    - wget https://github.com/sstephenson/bats/archive/v0.4.0.tar.gz
-    - tar -xzf v0.4.0.tar.gz -C /tmp/
-    - /tmp/bats-v0.4.0/install.sh /usr/local
+    - sudo add-apt-repository ppa:duggan/bats --yes
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq bats
 
 test:
   post:
