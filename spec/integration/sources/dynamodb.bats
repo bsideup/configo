@@ -16,7 +16,7 @@ aws dynamodb create-table --endpoint-url http://dynamodb:8000 --region us-west-1
     
 aws dynamodb put-item --endpoint-url http://dynamodb:8000 --region us-west-1 \
   --table-name configs  \
-  --item '{"key":{"S":"myApp" }, "TEST_PROPERTY":{"S": "test"}}'
+  --item '{"key":{"S":"myApp" }, "test":{"M":{"property":{"S": "test"}}}}'
 EOC
   
   run_container_with_parameters "--link $CONTAINER_ID:dynamodb" <<EOC
