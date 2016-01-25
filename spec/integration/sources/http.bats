@@ -3,7 +3,7 @@
 load ../test_helper
 
 @test "sources: HTTP works" {
-  CONTAINER_ID=$(docker run -d --label configo="true" nginx)
+  CONTAINER_ID=$(docker run -d --label configo="true" nginx:1.9.9)
   docker exec -i $CONTAINER_ID bash <<EOC
 /bin/cat <<EOF >/usr/share/nginx/html/test.json
 {
