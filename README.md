@@ -1,4 +1,4 @@
-# Configo
+# Configo [![Build Status](https://travis-ci.org/zeroturnaround/configo.svg?branch=master)](https://travis-ci.org/zeroturnaround/configo)
 
 configo helps run 12factor (http://12factor.net/config) apps by loading environment variables from different sources.
 
