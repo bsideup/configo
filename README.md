@@ -101,7 +101,7 @@ docker run \
 In this example, we are using the built-in `or` function. This will return the first non-empty argument or the last argument. The entire functionality of Go templates is available for use. More information can be found at https://golang.org/pkg/text/template/. 
 
 # Configuration
-Minimal configuration for Configo is a command to run. It will mean "Pass–through" mode where Configo will not affect execution of your app (except mappings, but their value should be prefixed with Configo-specific string).
+Configo can be run without specifying a configuration. Doing this will not affect your application.
 
 To make **Configo** load environment variables, you need to specify at least the environment variable `CONFIGO_SOURCE_N` where N indicates the priority for this source. Your application can have multiple sources and this will use priorities for overriding. Priority #5 overrides #0 and so on. N can be any positive number. You can reserve a space by using high values like 100, 200 etc. This way you do not have to rearrange sources when you decide to insert additional sources in the middle.
 
