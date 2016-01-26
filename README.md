@@ -1,4 +1,4 @@
-# Configo [![Build Status](https://travis-ci.org/zeroturnaround/configo.svg?branch=master)](https://travis-ci.org/zeroturnaround/configo) [![Join the chat at https://gitter.im/zeroturnaround/configo](https://badges.gitter.im/zeroturnaround/configo.svg)](https://gitter.im/zeroturnaround/configo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Configo [![Build Status](https://travis-ci.org/zeroturnaround/configo.svg?branch=master)](https://travis-ci.org/zeroturnaround/configo) [![Join the chat at https://gitter.im/zeroturnaround/configo](https://badges.gitter.im/zeroturnaround/configo.svg)](https://gitter.im/zeroturnaround/configo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Approved issues](https://badge.waffle.io/zeroturnaround/configo.svg?label=ready&title=Waffle.io)](http://waffle.io/zeroturnaround/configo)
 
 **Configo** helps running **12factor** (http://12factor.net/config) applications by loading environment variables from different sources.
 
