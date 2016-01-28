@@ -111,10 +111,12 @@ Each source is a JSON with at least `type` field.
 ### URL
 URL is one of the simplest source types. This will load the file from URL specified and parse it.
 
-| Field  | Description                                                                                                          | Required |
-|--------|----------------------------------------------------------------------------------------------------------------------|----------|
-| url    | URL to the file                                                                                                      |    Yes   |
-| format | Specifies the format to be used. Values that are allowed include: <ul><li>json</li><li>yaml</li><li>hcl</li><li>toml</li><li>properties</li></ul> |    Yes   |
+| Field    | Description                                                                                                          | Required |
+|----------|----------------------------------------------------------------------------------------------------------------------|----------|
+| url      | URL to the file                                                                                                      |    Yes   |
+| format   | Specifies the format to be used. Values that are allowed include: <ul><li>json</li><li>yaml</li><li>hcl</li><li>toml</li><li>properties</li></ul> |    Yes   |
+| tls.cert | PEM-encoded TLS certificate                                                                                          |    No    |
+| tls.key  | PEM-encoded TLS key                                                                                                  |    No    |
 
 Example:
 ```bash
