@@ -16,6 +16,5 @@ test:
   pre:
     - make vet
   post:
-    - make test
     - PATH="$PATH:$HOME/bats/bin" make itest
     - mv bin/configo.linux-amd64 $CIRCLE_ARTIFACTS
