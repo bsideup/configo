@@ -3,10 +3,10 @@
 load ../test_helper
 
 @test "sources: HTTP works" {
-  CONTAINER_ID=$(docker run -d --label configo="true" -v /usr/html/ smebberson/alpine-nginx:2.1.1)
+  CONTAINER_ID=$(docker run -d --label configo="true" -v /usr/share/nginx/html nginx:1.9.9)
   
   run_container_with_parameters "--link $CONTAINER_ID:nginx --volumes-from $CONTAINER_ID" <<EOC
-  /bin/cat <<EOF >/usr/html/test.json
+  /bin/cat <<EOF >/usr/share/nginx/html/test.json
 {
   "some": {
     "nested": {
