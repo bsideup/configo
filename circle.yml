@@ -8,7 +8,7 @@ machine:
 
 dependencies:
   cache_directories:
-    - $HOME/bats/
+    - ~/bats/
   pre:
     - if [[ $($HOME/bats/bin/bats --version) != "Bats 0.4.0" ]]; then mkdir -p $HOME/bats; curl -L https://github.com/sstephenson/bats/archive/v0.4.0.tar.gz | tar xvz --strip-components=1 -C $HOME/bats/; fi
 
