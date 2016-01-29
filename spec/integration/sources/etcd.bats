@@ -4,7 +4,7 @@ load ../test_helper
 
 setup() {
   CONTAINER_ID=$(docker run -d --label configo="true" quay.io/coreos/etcd:v2.0.3 -bind-addr=0.0.0.0:4001)
-  for i in {1..5}; do [ "$(docker run -i --rm --label configo='true' --link $CONTAINER_ID:etcd buildpack-deps:curl curl -sSL -XPUT http://etcd:4001/v2/keys/myApp/test/property -d value=test 2>/dev/null )" == "{action":"set"* ] && break || sleep 1; done
+  for i in {1..5}; do [ "$(docker run -i --rm --label configo='true' --link $CONTAINER_ID:etcd --entrypoint=/usr/bin/curl gliderlabs/consul:0.6 -sSL -XPUT http://etcd:4001/v2/keys/myApp/test/property -d value=test 2>/dev/null )" == "{action":"set"* ] && break || sleep 1; done
 }
 
 @test "sources: Etcd works" {

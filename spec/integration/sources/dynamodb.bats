@@ -3,8 +3,8 @@
 load ../test_helper
 
 @test "sources: DynamoDB works" {
-  CONTAINER_ID=$(docker run -d --label configo="true" tutum/dynamodb:latest)
-  docker run -i --rm --link $CONTAINER_ID:dynamodb xueshanf/awscli bash <<EOC
+  CONTAINER_ID=$(docker run -d --label configo="true" fingershock/dynamodb-local:2016-01-07_1.0)
+  docker run -i --rm --link $CONTAINER_ID:dynamodb xueshanf/awscli:latest bash <<EOC
 export AWS_ACCESS_KEY_ID=dummy
 export AWS_SECRET_ACCESS_KEY=dummy
 
