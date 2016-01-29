@@ -1,28 +1,7 @@
-machine:
-  pre:
-    - echo 'DOCKER_OPTS="-s btrfs -e lxc -D --userland-proxy=false"' | sudo tee -a /etc/default/docker
-    - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.1-circleci'
-    - sudo chmod 0755 /usr/bin/docker
-  services:
-    - docker
-
 dependencies:
-  cache_directories:
-    - ~/bats/
-  pre:
-    - if [[ $($HOME/bats/bin/bats --version) != "Bats 0.4.0" ]]; then mkdir -p $HOME/bats; curl -L https://github.com/sstephenson/bats/archive/v0.4.0.tar.gz | tar xvz --strip-components=1 -C $HOME/bats/; fi
-    - >
-      docker pull gliderlabs/consul:0.6 &
-      docker pull fingershock/dynamodb-local:2016-01-07_1.0 &
-      docker pull xueshanf/awscli &
-      docker pull quay.io/coreos/etcd:v2.0.3 &
-      docker pull redis:3.0.6-alpine &
-      docker pull nginx:1.9.9 &
-      docker pull busybox:1.24.1-uclibc &
-      wait
-test:
-  pre:
-    - make vet
   post:
-    - PATH="$PATH:$HOME/bats/bin" make itest
+    - make godep_restore
+test:
+  override:
+    - make build compile GOOS=linux GOARCH=amd64
     - mv bin/configo.linux-amd64 $CIRCLE_ARTIFACTS
