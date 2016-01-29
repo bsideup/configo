@@ -14,4 +14,4 @@ install:
   - make godep_restore
 script:
   - make test
-  - make itest
+  - PATH="$PATH:$HOME/bats/bin" make itest
