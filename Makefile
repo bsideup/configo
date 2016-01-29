@@ -8,6 +8,9 @@ ifdef GOOS
 BINARY_PATH :=$(BINARY_PATH).$(GOOS)-$(GOARCH)
 endif
 
+# We have to specify them manually because of GO15VENDOREXPERIMENT bug (vendor folder not excluded)
+PACKAGES := $(SOURCE_FOLDER) $(SOURCE_FOLDER)/sources/... $(SOURCE_FOLDER)/parsers/... $(SOURCE_FOLDER)/flatmap/...
+
 export GO15VENDOREXPERIMENT=1
 
 default: build
@@ -25,16 +28,16 @@ compile:
 build: vet fmt compile
 	
 fmt:
-	go list $(SOURCE_FOLDER)/... | grep -v /vendor/ | xargs -L1 go fmt
+	go fmt $(PACKAGES)
 
 vet:
-	go list $(SOURCE_FOLDER)/... | grep -v /vendor/ | xargs -L1 go vet
+	go vet $(PACKAGES)
 
 lint:
 	go list $(SOURCE_FOLDER)/... | grep -v /vendor/ | xargs -L1 golint
 
 test:
-	go list $(SOURCE_FOLDER)/... | grep -v /vendor/ | xargs -L1 go test
+	go test $(PACKAGES)
 	
 itest:
 	$(MAKE) compile GOOS=linux GOARCH=amd64
@@ -42,7 +45,7 @@ itest:
 
 godep_save:
 	go get github.com/tools/godep
-	godep save $(SOURCE_FOLDER)/...
+	godep save $(PACKAGES)
 
 godep_restore:
 	go get github.com/tools/godep

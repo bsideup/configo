@@ -1,0 +1,7 @@
+dependencies:
+  post:
+    - make godep_restore
+test:
+  override:
+    - make build compile GOOS=linux GOARCH=amd64
+    - mv bin/configo.linux-amd64 $CIRCLE_ARTIFACTS

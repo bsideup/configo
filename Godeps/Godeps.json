@@ -2,7 +2,10 @@
 	"ImportPath": "github.com/zeroturnaround/configo",
 	"GoVersion": "go1.5",
 	"Packages": [
-		"./..."
+		".",
+		"./sources/...",
+		"./parsers/...",
+		"./flatmap/..."
 	],
 	"Deps": [
 		{
