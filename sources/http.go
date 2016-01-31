@@ -2,6 +2,7 @@ package sources
 
 import (
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -9,16 +10,21 @@ import (
 )
 
 type HTTPSource struct {
-	URL    string `json:"url"`
-	Format string `json:"format"`
-	TLS    struct {
+	URL      string `json:"url"`
+	Format   string `json:"format"`
+	Insecure bool   `json:"insecure"`
+	TLS      struct {
 		Cert string `json:"cert"`
 		Key  string `json:"key"`
 	} `json:"tls"`
 }
 
 func (httpSource *HTTPSource) Get() (map[string]interface{}, error) {
-	transport := &http.Transport{}
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: httpSource.Insecure,
+		},
+	}
 
 	if httpSource.TLS.Cert != "" {
 		cert, err := tls.X509KeyPair([]byte(httpSource.TLS.Cert), []byte(httpSource.TLS.Key))
@@ -26,9 +32,7 @@ func (httpSource *HTTPSource) Get() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		transport.TLSClientConfig = &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		}
+		transport.TLSClientConfig.Certificates = []tls.Certificate{cert}
 	}
 
 	client := &http.Client{Transport: transport}
@@ -37,6 +41,10 @@ func (httpSource *HTTPSource) Get() (map[string]interface{}, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusBadRequest {
+		return nil, errors.New(response.Status)
 	}
 
 	defer response.Body.Close()

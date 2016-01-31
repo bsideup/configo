@@ -115,6 +115,7 @@ URL is one of the simplest source types. This will load the file from URL specif
 |----------|----------------------------------------------------------------------------------------------------------------------|----------|
 | url      | URL to the file                                                                                                      |    Yes   |
 | format   | Specifies the format to be used. Values that are allowed include: <ul><li>json</li><li>yaml</li><li>hcl</li><li>toml</li><li>properties</li></ul> |    Yes   |
+| insecure | Skip domain and certificate check                                                                                    |    No    |
 | tls.cert | PEM-encoded TLS certificate                                                                                          |    No    |
 | tls.key  | PEM-encoded TLS key                                                                                                  |    No    |
 
