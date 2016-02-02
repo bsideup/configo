@@ -19,7 +19,7 @@ EOC
 
 @test "sources: HTTP with TLS Cert auth and not configured TLS should fail" {
   docker exec -i $CONTAINER_ID bash <<EOC
-sed -i -e 's%ssl on;%ssl on;\n    ssl_client_certificate /etc/nginx/ssl/cert.pem;\n    ssl_verify_client on;%g' /etc/nginx/conf.d/default.conf
+sed -i -e 's%ssl on;%ssl on;\n    ssl_client_certificate /etc/nginx/ssl/fullchain.pem;\n    ssl_verify_client on;%g' /etc/nginx/conf.d/default.conf
 sleep 1
 service nginx reload
 EOC
@@ -34,7 +34,7 @@ EOC
 
 @test "sources: HTTP with Cert auth works" {
   docker exec -i $CONTAINER_ID bash <<EOC
-sed -i -e 's%ssl on;%ssl on;\n    ssl_client_certificate /etc/nginx/ssl/cert.pem;\n    ssl_verify_client on;%g' /etc/nginx/conf.d/default.conf
+sed -i -e 's%ssl on;%ssl on;\n    ssl_client_certificate /etc/nginx/ssl/fullchain.pem;\n    ssl_verify_client on;%g' /etc/nginx/conf.d/default.conf
 sleep 1
 service nginx reload
 EOC
@@ -47,8 +47,8 @@ EOC
   "url": "https://nginx/test.json",
   "insecure": true,
   "tls": {
-    "cert": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/cert.pem)",
-    "key": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/key.pem)"
+    "cert": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/fullchain.pem)",
+    "key": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/privkey.pem)"
   }
 }
 EOF
