@@ -57,5 +57,5 @@ assert_failure() {
 }
 
 teardown() {
-  docker rm -f $(docker ps -q --filter "configo=true") &>/dev/null | true 
+  docker rm -f $(docker ps -aq --filter "configo=true") &>/dev/null | true 
 }
