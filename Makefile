@@ -17,9 +17,7 @@ default: build
 	
 build_all: vet fmt
 	for GOOS in darwin linux windows; do \
-		for GOARCH in 386 amd64; do \
-			$(MAKE) compile GOOS=$$GOOS GOARCH=$$GOARCH ; \
-		done \
+		$(MAKE) compile GOOS=$$GOOS GOARCH=amd64 ; \
 	done
 
 compile:
