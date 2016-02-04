@@ -14,7 +14,7 @@ type DynamoDBSource struct {
 	Region    string `json:"region"`
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
-	TableName string `json:"table"`
+	Table     string `json:"table"`
 	Key       string `json:"key"`
 }
 
@@ -43,7 +43,7 @@ func (dynamoDBSource *DynamoDBSource) Get() (map[string]interface{}, error) {
 
 	client := dynamodb.New(session.New(config))
 
-	tableName := aws.String(dynamoDBSource.TableName)
+	tableName := aws.String(dynamoDBSource.Table)
 
 	err := client.WaitUntilTableExists(&dynamodb.DescribeTableInput{TableName: tableName})
 
