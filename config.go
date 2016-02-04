@@ -50,11 +50,11 @@ func GetConfig(source string) (map[string]interface{}, error) {
 	})
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if err := decoder.Decode(rawSource); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if len(metadata.Unused) > 0 {
