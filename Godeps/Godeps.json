@@ -124,6 +124,10 @@
 			"Rev": "c81f9d71af8f8cba1466501d30326b99a4e56c19"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
+		},
+		{
 			"ImportPath": "github.com/subosito/gotenv",
 			"Comment": "v1.0.0",
 			"Rev": "61aa1800e632021fa192da0379ddb78bbd5390d9"

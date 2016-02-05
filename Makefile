@@ -4,9 +4,13 @@ SOURCE_FOLDER := .
 
 BINARY_PATH ?= ./bin/configo
 
+GOARCH ?= amd64
+
 ifdef GOOS
 BINARY_PATH :=$(BINARY_PATH).$(GOOS)-$(GOARCH)
 endif
+
+SPECS ?= spec/integration/**
 
 # We have to specify them manually because of GO15VENDOREXPERIMENT bug (vendor folder not excluded)
 PACKAGES := $(SOURCE_FOLDER) $(SOURCE_FOLDER)/sources/... $(SOURCE_FOLDER)/parsers/... $(SOURCE_FOLDER)/flatmap/...
@@ -21,7 +25,7 @@ build_all: vet fmt
 	done
 
 compile:
-	CGO_ENABLED=0 go build -ldflags '-s' -o $(BINARY_PATH) $(SOURCE_FOLDER)/
+	CGO_ENABLED=0 go build -i -v -ldflags '-s' -o $(BINARY_PATH) $(SOURCE_FOLDER)/
 
 build: vet fmt compile
 	
@@ -39,7 +43,7 @@ test:
 	
 itest:
 	$(MAKE) compile GOOS=linux GOARCH=amd64
-	bats spec/integration/**
+	bats $(SPECS)
 
 godep_save:
 	go get github.com/tools/godep
