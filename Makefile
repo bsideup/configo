@@ -44,4 +44,4 @@ itest:
 
 bootstrap:
 	go get github.com/Masterminds/glide
-	glide install --cache
+	glide install --use-gopath --cache-gopath
