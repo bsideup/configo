@@ -1,4 +1,4 @@
-.PHONY: compile build build_all fmt lint test itest vet godep_save godep_restore
+.PHONY: compile build build_all fmt lint test itest vet bootstrap
 	
 SOURCE_FOLDER := .
 
@@ -11,9 +11,6 @@ BINARY_PATH :=$(BINARY_PATH).$(GOOS)-$(GOARCH)
 endif
 
 SPECS ?= spec/integration/**
-
-# We have to specify them manually because of GO15VENDOREXPERIMENT bug (vendor folder not excluded)
-PACKAGES := $(SOURCE_FOLDER) $(SOURCE_FOLDER)/sources/... $(SOURCE_FOLDER)/parsers/... $(SOURCE_FOLDER)/flatmap/... $(SOURCE_FOLDER)/exec/...
 
 export GO15VENDOREXPERIMENT=1
 
@@ -30,25 +27,21 @@ compile:
 build: vet fmt compile
 	
 fmt:
-	go fmt $(PACKAGES)
+	go fmt $(glide novendor)
 
 vet:
-	go vet $(PACKAGES)
+	go vet $(glide novendor)
 
 lint:
 	go list $(SOURCE_FOLDER)/... | grep -v /vendor/ | xargs -L1 golint
 
 test:
-	go test $(PACKAGES)
+	go test $(glide novendor)
 	
 itest:
 	$(MAKE) compile GOOS=linux GOARCH=amd64
 	bats $(SPECS)
 
-godep_save:
-	go get github.com/tools/godep
-	godep save $(PACKAGES)
-
-godep_restore:
-	go get github.com/tools/godep
-	godep restore -v
+bootstrap:
+	go get github.com/Masterminds/glide
+	glide install --cache

@@ -1,6 +1,6 @@
 dependencies:
   post:
-    - make godep_restore
+    - make bootstrap
 test:
   override:
     - make build_all
