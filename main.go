@@ -3,22 +3,26 @@ package main
 import (
 	"bytes"
 	"fmt"
+	. "github.com/ahmetalpbalkan/go-linq"
+	"github.com/zeroturnaround/configo/exec"
 	"github.com/zeroturnaround/configo/flatmap"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
-	"sync"
-	"syscall"
 	"text/template"
 )
 
 const envVariablePrefix = "CONFIGO_SOURCE_"
 const configoPrefix = "CONFIGO:"
 
-type configResolveResult struct {
-	config map[string]interface{}
-	err    error
+type env struct {
+	key   string
+	value string
+}
+
+type sourceConfig struct {
+	priority int
+	value    string
 }
 
 func main() {
@@ -33,100 +37,79 @@ func main() {
 		panic("the required argument `command` was not provided\n")
 	}
 
-	command := strings.Join(os.Args[1:], " ")
+	environ := os.Environ()
 
-	sources := getSources()
-
-	configs := getConfigs(sources)
-
-	sourceKeys := make([]int, 0, len(configs))
-	for key := range configs {
-		sourceKeys = append(sourceKeys, key)
-	}
-	sort.Ints(sourceKeys)
-
-	for _, sourceKey := range sourceKeys {
-		result := configs[sourceKey]
-
-		if result.err != nil {
-			panic(result.err)
-		}
-
-		partialConfig := flatmap.Flatten(result.config)
-
-		for key, value := range partialConfig {
-			os.Setenv(key, fmt.Sprintf("%v", value))
-		}
-	}
-
-	envVars := GetEnvironmentVariables()
-	for key, value := range envVars {
-		if strings.HasPrefix(value, configoPrefix) {
-			tmpl, err := template.New(key).Parse(strings.TrimPrefix(value, configoPrefix))
-
-			if err != nil {
-				panic(err)
-			}
-
-			var buffer bytes.Buffer
-			tmpl.Execute(&buffer, envVars)
-
-			os.Setenv(key, buffer.String())
-		}
-	}
-
-	execute(command)
-}
-
-func getSources() map[int]string {
-	sources := make(map[int]string)
-	for key, value := range GetEnvironmentVariables() {
-		if strings.HasPrefix(key, envVariablePrefix) {
-			index, err := strconv.Atoi(strings.TrimLeft(key, envVariablePrefix))
-
-			if err != nil {
-				panic(err)
-			}
-
-			sources[index] = value
-		}
-	}
-
-	return sources
-}
-
-// Resolves the specified map of
-func getConfigs(sources map[int]string) map[int]configResolveResult {
-	configs := make(map[int]configResolveResult, len(sources))
-
-	var waitGroup sync.WaitGroup
-	for sourceKey := range sources {
-		source := sources[sourceKey]
-
-		waitGroup.Add(1)
-		//TODO retry
-		go func(sourceKey int, source string) {
-			defer waitGroup.Done()
-
-			config, err := GetConfig(source)
-
-			configs[sourceKey] = configResolveResult{config, err}
-		}(sourceKey, source)
-	}
-	waitGroup.Wait()
-
-	return configs
-}
-
-func execute(command string) {
-	cmd := ShellInvocationCommand(command)
-
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-
-	if err := cmd.Run(); cmd.Process == nil {
+	if err := resolveAll(environ); err != nil {
 		panic(err)
 	}
-	os.Exit(cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus())
+
+	if err := processTemplatedEnvs(environ); err != nil {
+		panic(err)
+	}
+
+	exec.Execute(strings.Join(os.Args[1:], " "))
+}
+
+func resolveAll(environ []string) error {
+	_, err := fromEnviron(environ).
+		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).key, envVariablePrefix), nil }).
+		Select(func(kv T) (T, error) {
+		priority, err := strconv.Atoi(strings.TrimLeft(kv.(env).key, envVariablePrefix))
+		if err != nil {
+			return nil, err
+		}
+		return sourceConfig{priority, kv.(env).value}, nil
+	}).
+		OrderBy(func(a T, b T) bool { return a.(sourceConfig).priority <= b.(sourceConfig).priority }).
+		Select(func(pair T) (T, error) { return GetSource(pair.(sourceConfig).value) }).
+		// Resolve in parallel because some sources might use IO and will take some time
+		AsParallel().AsOrdered().
+		Select(func(source T) (T, error) { return source.(Source).Get() }).
+		Select(func(config T) (T, error) { return flatmap.Flatten(config.(map[string]interface{})), nil }).
+		AsSequential().
+		All(func(partialConfig T) (bool, error) {
+		for key, value := range partialConfig.(map[string]interface{}) {
+			os.Setenv(key, fmt.Sprintf("%v", value))
+		}
+		return true, nil
+	})
+
+	return err
+}
+
+func processTemplatedEnvs(environ []string) error {
+	envMap := make(map[string]string)
+
+	// Calculate fresh map of environment variables
+	fromEnviron(os.Environ()).All(func(kv T) (bool, error) {
+		envMap[kv.(env).key] = kv.(env).value
+		return true, nil
+	})
+
+	_, err := fromEnviron(environ).
+		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
+		All(func(kv T) (bool, error) {
+		tmpl, err := template.New("").Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
+
+		if err != nil {
+			return false, err
+		}
+
+		var buffer bytes.Buffer
+		if err = tmpl.Execute(&buffer, envMap); err != nil {
+			return false, err
+		}
+
+		os.Setenv(kv.(env).key, buffer.String())
+		return true, nil
+	})
+
+	return err
+}
+
+func fromEnviron(environ []string) Query {
+	return From(environ).Select(func(kv T) (T, error) {
+		pair := strings.SplitN(kv.(string), "=", 2)
+		return env{pair[0], pair[1]}, nil
+	})
 }
