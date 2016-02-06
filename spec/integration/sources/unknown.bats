@@ -8,7 +8,7 @@ load ../test_helper
   configo printenv TEST_PROPERTY
 EOC
 
-  assert_failure "Failed to find source type: NON_EXISTING_TYPE"
+  assert_failure "Failed to parse source #0: Failed to find source type: NON_EXISTING_TYPE"
 }
 
 @test "sources: should fail on unknown field" {
@@ -17,5 +17,5 @@ EOC
   configo env
 EOC
 
-  assert_failure "unknown configuration keys: [fomat]"
+  assert_failure "Failed to parse source #0: unknown configuration keys: [fomat]"
 }
