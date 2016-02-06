@@ -13,7 +13,7 @@ endif
 SPECS ?= spec/integration/**
 
 # We have to specify them manually because of GO15VENDOREXPERIMENT bug (vendor folder not excluded)
-PACKAGES := $(SOURCE_FOLDER) $(SOURCE_FOLDER)/sources/... $(SOURCE_FOLDER)/parsers/... $(SOURCE_FOLDER)/flatmap/...) $(SOURCE_FOLDER)/exec/...
+PACKAGES := $(SOURCE_FOLDER) $(SOURCE_FOLDER)/sources/... $(SOURCE_FOLDER)/parsers/... $(SOURCE_FOLDER)/flatmap/... $(SOURCE_FOLDER)/exec/...
 
 export GO15VENDOREXPERIMENT=1
 
