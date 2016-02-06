@@ -24,10 +24,10 @@ var configMappings = map[string]reflect.Type{
 	"redis":    reflect.TypeOf(sources.RedisSource{}),
 }
 
-// GetConfig resolves config by source (in JSON format).
+// GetSource resolves source by string (in JSON format).
 // Source must contain at least one property with name "type", which will be
 // used to select proper source implementation.
-func GetConfig(source string) (map[string]interface{}, error) {
+func GetSource(source string) (Source, error) {
 	rawSource := make(map[string]interface{})
 
 	sourceBytes := []byte(source)
@@ -61,5 +61,5 @@ func GetConfig(source string) (map[string]interface{}, error) {
 		return nil, fmt.Errorf("unknown configuration keys: %v", metadata.Unused)
 	}
 
-	return loader.Get()
+	return loader, nil
 }
