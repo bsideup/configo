@@ -210,14 +210,14 @@ If you have Docker installed, run this command to build binaries for all platfor
 
 ```bash
 $ docker run -it --rm -v "$PWD":/go/src/github.com/zeroturnaround/configo \
-  -w /go/src/github.com/zeroturnaround/configo golang:1.5 make godep_restore build_all
+  -w /go/src/github.com/zeroturnaround/configo golang:1.5 make bootstrap build_all
 ```
 
 ## Build it yourself (without Docker)
 You need to have Golang 1.5 and GNU Make installed if you want to build **Configo**.
 
 ```bash
-$ make godep_restore build_all
+$ make bootstrap build_all
 ```
 
 Binaries for each platform will be available in the `/bin/` folder:

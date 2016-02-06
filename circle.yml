@@ -1,7 +1,13 @@
+machine:
+  environment:
+    GO15VENDOREXPERIMENT: 1
 dependencies:
-  post:
-    - make godep_restore
+  pre:
+    - make bootstrap
+  override:
+    - mkdir -p $HOME/.go_workspace/src/github.com/$CIRCLE_PROJECT_USERNAME
+    - ln -fs $HOME/$CIRCLE_PROJECT_REPONAME $HOME/.go_workspace/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
 test:
   override:
-    - make build_all
-    - mv bin/configo.* $CIRCLE_ARTIFACTS
+    - cd $HOME/.go_workspace/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME && make build_all
+    - mv $HOME/.go_workspace/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/bin/configo.* $CIRCLE_ARTIFACTS
