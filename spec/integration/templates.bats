@@ -3,7 +3,7 @@
 load test_helper
 
 @test "templates: functions" {
-  run_container <<EOC
+  run_container_with_parameters "-e CONFIGO_LOG_LEVEL=ERROR" <<EOC
   export SOME_PROPERTY=123
   export TEST_PROPERTY="CONFIGO:some property value is: {{or .NON_EXISTING_PROPERTY .ANOTHER_NON_EXISTING_PROPERTY .SOME_PROPERTY `default`}}"
   configo printenv TEST_PROPERTY

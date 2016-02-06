@@ -8,7 +8,9 @@ run_container() {
 
 run_container_with_parameters() {
   docker pull busybox:1.24.1-uclibc
-  run docker run --label configo="true" -i -v "$PWD/bin/configo.linux-amd64":/bin/configo:ro $1 busybox:1.24.1-uclibc $2
+  run docker run --label configo="true" -i -v "$PWD/bin/configo.linux-amd64":/bin/configo:ro \
+    -e CONFIGO_LOG_PATTERN='%{message}' \
+    $1 busybox:1.24.1-uclibc $2
 }
 
 assert_equal() {

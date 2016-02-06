@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
+	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
 	"github.com/zeroturnaround/configo/flatmap"
 	"os"
@@ -20,24 +21,56 @@ type env struct {
 	value string
 }
 
-type sourceConfig struct {
-	priority int
-	value    string
+type sourceContext struct {
+	priority      int
+	value         string
+	loader        Source
+	partialConfig map[string]interface{}
 }
 
+var log = logging.MustGetLogger("configo")
+var loggingBackend = logging.NewLogBackend(os.Stdout, "", 0)
+
 func main() {
+	pattern := os.Getenv("CONFIGO_LOG_PATTERN")
+
+	if len(pattern) == 0 {
+		pattern = `%{color}%{time:15:04:05.999} [%{level:.1s}] %{message}%{color:reset}`
+	}
+
+	format := logging.MustStringFormatter(pattern)
+	logging.SetBackend(logging.NewBackendFormatter(loggingBackend, format))
+
+	levelString := os.Getenv("CONFIGO_LOG_LEVEL")
+
+	var level logging.Level
+	if len(levelString) > 0 {
+		var err error
+		level, err = logging.LogLevel(levelString)
+
+		if err != nil {
+			log.Warningf("%s", err)
+		}
+	} else {
+		level = logging.WARNING
+	}
+
+	logging.SetLevel(level, "configo")
+
 	defer func() {
 		if r := recover(); r != nil {
-			os.Stderr.WriteString(fmt.Sprintln(r))
+			log.Errorf("%s", r)
 			os.Exit(1)
 		}
 	}()
 
 	if len(os.Args) < 2 {
-		panic("the required argument `command` was not provided\n")
+		panic("the required argument `command` was not provided")
 	}
 
 	environ := os.Environ()
+
+	log.Debugf("Environment variables at start:\n\t%s", strings.Join(environ, "\n\t"))
 
 	if err := resolveAll(environ); err != nil {
 		panic(err)
@@ -51,30 +84,57 @@ func main() {
 }
 
 func resolveAll(environ []string) error {
-	_, err := fromEnviron(environ).
+	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).key, envVariablePrefix), nil }).
 		Select(func(kv T) (T, error) {
 		priority, err := strconv.Atoi(strings.TrimLeft(kv.(env).key, envVariablePrefix))
 		if err != nil {
 			return nil, err
 		}
-		return sourceConfig{priority, kv.(env).value}, nil
+		return sourceContext{priority, kv.(env).value, nil, nil}, nil
 	}).
-		OrderBy(func(a T, b T) bool { return a.(sourceConfig).priority <= b.(sourceConfig).priority }).
-		Select(func(pair T) (T, error) { return GetSource(pair.(sourceConfig).value) }).
+		OrderBy(func(a T, b T) bool { return a.(sourceContext).priority <= b.(sourceContext).priority }).
+		Select(func(context T) (T, error) {
+		loader, err := GetSource(context.(sourceContext).value)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse source #%d: %s", context.(sourceContext).priority, err)
+		}
+		return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, loader, nil}, nil
+	}).
 		// Resolve in parallel because some sources might use IO and will take some time
 		AsParallel().AsOrdered().
-		Select(func(source T) (T, error) { return source.(Source).Get() }).
-		Select(func(config T) (T, error) { return flatmap.Flatten(config.(map[string]interface{})), nil }).
+		Select(func(context T) (T, error) {
+		result, err := context.(sourceContext).loader.Get()
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to resolve source #%d: %s", context.(sourceContext).priority, err)
+		}
+
+		return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, context.(sourceContext).loader, result}, nil
+	}).
 		AsSequential().
-		All(func(partialConfig T) (bool, error) {
-		for key, value := range partialConfig.(map[string]interface{}) {
+		CountBy(func(context T) (bool, error) {
+		for key, value := range flatmap.Flatten(context.(sourceContext).partialConfig) {
+			log.Infof("Source #%d: Setting %s to %v", context.(sourceContext).priority, key, value)
 			os.Setenv(key, fmt.Sprintf("%v", value))
 		}
 		return true, nil
 	})
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		log.Warning("No sources provided")
+	} else {
+		if log.IsEnabledFor(logging.DEBUG) {
+			log.Debugf("Environment variables after resolve:\n\t%s", strings.Join(os.Environ(), "\n\t"))
+		}
+	}
+
+	return nil
 }
 
 func processTemplatedEnvs(environ []string) error {
@@ -86,9 +146,9 @@ func processTemplatedEnvs(environ []string) error {
 		return true, nil
 	})
 
-	_, err := fromEnviron(environ).
+	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
-		All(func(kv T) (bool, error) {
+		CountBy(func(kv T) (bool, error) {
 		tmpl, err := template.New("").Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
 
 		if err != nil {
@@ -100,11 +160,26 @@ func processTemplatedEnvs(environ []string) error {
 			return false, err
 		}
 
-		os.Setenv(kv.(env).key, buffer.String())
+		key := kv.(env).key
+		value := buffer.String()
+
+		log.Infof("Setting templated variable %s to %s", key, value)
+
+		os.Setenv(key, value)
 		return true, nil
 	})
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		if log.IsEnabledFor(logging.DEBUG) {
+			log.Debugf("Environment variables after templates:\n\t%s", strings.Join(os.Environ(), "\n\t"))
+		}
+	}
+
+	return nil
 }
 
 func fromEnviron(environ []string) Query {
