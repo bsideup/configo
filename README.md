@@ -6,6 +6,7 @@
 Imagine having an application that is configurable with environment variables. Let us assume that this is a self-contained (http://12factor.net/processes) **NodeJS** application, and that we have a **Docker** image for it:
 ```Dockerfile
 FROM node
+
 ADD . /app
 WORKDIR /app
 
@@ -39,18 +40,17 @@ Since we have 5 servers in production, we have to configure these environment va
 Meet **Configo**!
 
 First, change your Dockerfile ever so slightly:
-```Dockerfile
+```diff
 FROM node
 
-# Download Configo binary
-RUN curl -L https://github.com/zeroturnaround/configo/releases/download/v0.1.0/configo.linux-amd64 >/usr/local/bin/configo && \
-    chmod +x /usr/local/bin/configo
++RUN curl -L https://github.com/zeroturnaround/configo/releases/download/v0.1.0/configo.linux-amd64 >/usr/local/bin/configo && \
++    chmod +x /usr/local/bin/configo
 
 ADD . /app
 WORKDIR /app
 
-# Add it before your command
-CMD ["configo", "node", "server.js"]
+-CMD ["node", "server.js"]
++CMD ["configo", "node", "server.js"]
 ```
 
 > For this example, we will use an URL as a source for **Configo**. Other possible sources can be used - check the configuration section below for more information.
