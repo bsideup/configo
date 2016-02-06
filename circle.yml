@@ -1,5 +1,5 @@
 dependencies:
-  post:
+  pre:
     - make bootstrap
 test:
   override:
