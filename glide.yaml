@@ -1,0 +1,27 @@
+package: github.com/zeroturnaround/configo
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/ahmetalpbalkan/go-linq
+- package: github.com/aws/aws-sdk-go
+  subpackages:
+  - /aws
+  - aws/credentials
+  - aws/defaults
+  - aws/session
+  - service/dynamodb
+  - service/dynamodb/dynamodbattribute
+- package: github.com/coreos/etcd
+  subpackages:
+  - /Godeps/_workspace/src/golang.org/x/net/context
+  - client
+- package: github.com/garyburd/redigo
+  subpackages:
+  - /redis
+- package: github.com/ghodss/yaml
+- package: github.com/hashicorp/consul
+  subpackages:
+  - /api
+- package: github.com/hashicorp/hcl
+- package: github.com/magiconair/properties
+- package: github.com/mitchellh/mapstructure
+- package: github.com/op/go-logging
