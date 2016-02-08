@@ -139,6 +139,20 @@ CONFIGO_SOURCE_0='{"type": "file", "path": "/etc/myApp/test.yml", "format": "yam
 ```
 ---
 
+### Shell
+This will execute a command and parse it.
+
+| Field   | Description                                                                                                          | Required |
+|---------|----------------------------------------------------------------------------------------------------------------------|----------|
+| command | Command to execute                                                                                                   |    Yes   |
+| format  | Specifies the format to be used. Values that are allowed include: <ul><li>json</li><li>yaml</li><li>hcl</li><li>toml</li><li>properties</li></ul> |    Yes   |
+
+Example:
+```bash
+CONFIGO_SOURCE_0='{"type": "shell", "format": "yaml", "command": "./my-source-plugin | grep MYAPP_"}'
+```
+---
+
 ### Redis
 This will use a Redis hashmap as a source.
 
