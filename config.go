@@ -22,6 +22,7 @@ var configMappings = map[string]reflect.Type{
 	"file":     reflect.TypeOf(sources.FileSource{}),
 	"http":     reflect.TypeOf(sources.HTTPSource{}),
 	"redis":    reflect.TypeOf(sources.RedisSource{}),
+	"shell":    reflect.TypeOf(sources.ShellSource{}),
 }
 
 // GetSource resolves source by string (in JSON format).
