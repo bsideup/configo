@@ -22,7 +22,7 @@ docker run \
   -e "GOOGLE_ANALYTICS_KEY=UA-XXXXX-Y" \
   -e TWITTER_KEY=abcdefg \
   -e SEND_EMAILS=true \
-  myAppImage node server.js
+  myAppImage
 ```
 We also have a server to run some background jobs:
 ```bash
@@ -32,7 +32,7 @@ docker run \
   -e TWITTER_KEY=abcdefg \
   -e SEND_EMAILS=true \
   -e RUN_JOBS=true \
-  myAppImage node server.js
+  myAppImage
 ```
 
 Since we have 5 servers in production, we have to configure these environment variables for each server. Would it not be nice to have a single source of configuration and load it for each app? And maybe some shared configuration as well? This is where **Configo** comes in. 
@@ -81,12 +81,12 @@ We are now ready to start our applications:
 docker run \
   -e CONFIGO_SOURCE_0='{"type": "http", "format": "yaml", "url": "https://my.server.com/common.yaml"}' \
   -e CONFIGO_SOURCE_100='{"type": "http", "format": "yaml", "url": "https://my.server.com/server.yaml"}' \
-  myAppImage node server.js
+  myAppImage
 
 docker run \
   -e CONFIGO_SOURCE_0='{"type": "http", "format": "yaml", "url": "https://my.server.com/common.yaml"}' \
   -e CONFIGO_SOURCE_100='{"type": "http", "format": "yaml", "url": "https://my.server.com/jobs.yaml"}' \
-  myAppImage node server.js
+  myAppImage
 ```
 Since we added **Configo**, it will now load configuration from the sources we specified. In addition, it will merge these settings and configure the environment variables for your application.
 
@@ -96,7 +96,7 @@ Wait! There is more! You can use Golang templates to manipulate environment vari
 docker run \
   -e CONFIGO_SOURCE_0='{"type": "http", "format": "yaml", "url": "https://my.server.com/common.yaml"}' \
   -e DB_REDIS_URI='CONFIGO:{{or .DB_REDIS_URI .REDIS_URI "redis://localhost/0"}}' \
-  myAppImage node server.js
+  myAppImage
 ```
 In this example, we are using the built-in `or` function. This will return the first non-empty argument or the last argument. The entire functionality of Go templates is available for use. More information can be found at https://golang.org/pkg/text/template/. 
 
