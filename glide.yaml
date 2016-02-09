@@ -22,6 +22,9 @@ import:
   subpackages:
   - api
 - package: github.com/hashicorp/hcl
+- package: github.com/hashicorp/vault
+  subpackages:
+  - api
 - package: github.com/magiconair/properties
 - package: github.com/mitchellh/mapstructure
 - package: github.com/op/go-logging
