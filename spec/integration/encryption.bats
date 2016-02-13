@@ -5,8 +5,13 @@ load test_helper
 @test "encryption: basic" {
   run_container_with_parameters "-e CONFIGO_LOG_LEVEL=ERROR" <<EOC
   export CONFIGO_ENCRYPTION_KEY="a very very very very secret key"
-  export TEST_PROPERTY='CONFIGO:{{decrypt "mYii+KwpzEHroZUNuT2jAirM2qmJUr1tdWFFocGEJOQ="}}'
+
+  export TEST_PROPERTY_ENCODED='CONFIGO:{{encrypt "123"}}'
+
+  configo sh <<EOF
+  export TEST_PROPERTY="CONFIGO:{{decrypt \"\\\$TEST_PROPERTY_ENCODED\"}}"
   configo printenv TEST_PROPERTY
+EOF
 EOC
   
   assert_success "123"

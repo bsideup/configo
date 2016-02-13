@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
 	"github.com/zeroturnaround/configo/flatmap"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -153,6 +155,34 @@ func processTemplatedEnvs(environ []string) error {
 	encryptionKey := os.Getenv("CONFIGO_ENCRYPTION_KEY")
 
 	customFuncs := template.FuncMap{
+		"encrypt": func(rawValue string) (string, error) {
+			if len(encryptionKey) < 1 {
+				return "", errors.New("CONFIGO_ENCRYPTION_KEY should be set in order to use `encrypt` function")
+			}
+
+			rawBytes := []byte(rawValue)
+
+			if len(rawBytes)%aes.BlockSize != 0 {
+				padding := aes.BlockSize - len(rawBytes)%aes.BlockSize
+				padtext := bytes.Repeat([]byte{byte(0)}, padding)
+				rawBytes = append(rawBytes, padtext...)
+			}
+
+			block, err := aes.NewCipher([]byte(encryptionKey))
+			if err != nil {
+				return "", err
+			}
+			ciphertext := make([]byte, aes.BlockSize+len(rawBytes))
+
+			iv := ciphertext[:aes.BlockSize]
+			if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+				return "", err
+			}
+			mode := cipher.NewCBCEncrypter(block, iv)
+			mode.CryptBlocks(ciphertext[aes.BlockSize:], rawBytes)
+
+			return base64.StdEncoding.EncodeToString(ciphertext), nil
+		},
 		"decrypt": func(encodedValue string) (string, error) {
 			if len(encryptionKey) < 1 {
 				return "", errors.New("CONFIGO_ENCRYPTION_KEY should be set in order to use `decrypt` function")
