@@ -12,7 +12,7 @@ EOC
   assert_success "123"
 }
 
-@test "encryption: fails is encryption key is not set" {
+@test "encryption: fails if encryption key is not set" {
   run_container_with_parameters "-e CONFIGO_LOG_LEVEL=ERROR" <<EOC
   export TEST_PROPERTY='CONFIGO:{{decrypt "mYii+KwpzEHroZUNuT2jAirM2qmJUr1tdWFFocGEJOQ="}}'
   configo printenv TEST_PROPERTY
