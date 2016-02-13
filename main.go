@@ -2,6 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
@@ -146,10 +150,47 @@ func processTemplatedEnvs(environ []string) error {
 		return true, nil
 	})
 
+	encryptionKey := os.Getenv("CONFIGO_ENCRYPTION_KEY")
+
+	customFuncs := template.FuncMap{
+		"decrypt": func(encodedValue string) (string, error) {
+			if len(encryptionKey) < 1 {
+				return "", errors.New("CONFIGO_ENCRYPTION_KEY should be set in order to use `decrypt` function")
+			}
+
+			block, err := aes.NewCipher([]byte(encryptionKey))
+			if err != nil {
+				return "", err
+			}
+
+			b, err := base64.StdEncoding.DecodeString(encodedValue)
+			if err != nil {
+				return "", err
+			}
+
+			if len(b) < aes.BlockSize {
+				return "", errors.New("ciphertext too short")
+			}
+			iv := b[:aes.BlockSize]
+			b = b[aes.BlockSize:]
+
+			if len(b)%aes.BlockSize != 0 {
+				return "", errors.New("ciphertext is not a multiple of the block size")
+			}
+
+			mode := cipher.NewCBCDecrypter(block, iv)
+			mode.CryptBlocks(b, b)
+
+			b = bytes.TrimRight(b, "\x00")
+
+			return string(b), nil
+		},
+	}
+
 	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
 		CountBy(func(kv T) (bool, error) {
-		tmpl, err := template.New("").Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
+		tmpl, err := template.New(kv.(env).key).Funcs(customFuncs).Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
 
 		if err != nil {
 			return false, err
@@ -163,9 +204,14 @@ func processTemplatedEnvs(environ []string) error {
 		key := kv.(env).key
 		value := buffer.String()
 
-		log.Infof("Setting templated variable %s to %s", key, value)
+		log.Infof("Setting templated variable `%s` to `%#v`", key, value)
 
-		os.Setenv(key, value)
+		err = os.Setenv(key, value)
+
+		if err != nil {
+			return false, err
+		}
+
 		return true, nil
 	})
 
