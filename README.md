@@ -17,7 +17,6 @@ WORKDIR /app
 CMD ["node", "server.js"]
 ```
 
-## Loading the configuration
 Surely you want to deploy this application to dev/qa/production. Some configuration is obviously required. We will use these environment variables for this configuration:
 ```bash
 docker run \
