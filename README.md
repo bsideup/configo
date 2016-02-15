@@ -2,6 +2,10 @@
 
 **Configo** helps running **12factor** (http://12factor.net/config) applications by loading environment variables from different sources.
 
+# Configuration
+See wiki for detailed explanation of configuration options, supported sources and more examples:
+https://github.com/zeroturnaround/configo/wiki
+
 # Usage
 Imagine having an application that is configurable with environment variables. Let us assume that this is a self-contained (http://12factor.net/processes) **NodeJS** application, and that we have a **Docker** image for it:
 ```Dockerfile
@@ -89,20 +93,6 @@ docker run \
   myAppImage
 ```
 Since we added **Configo**, it will now load configuration from the sources we specified. In addition, it will merge these settings and configure the environment variables for your application.
-
-## Mapping configuration
-Wait! There is more! You can use Golang templates to manipulate environment variables. Simply set the environment variable with the value prefixed by `CONFIGO:` and it will be executed (the end result will not include the `CONFIGO:` prefix). Here is an example of this:
-```bash
-docker run \
-  -e CONFIGO_SOURCE_0='{"type": "http", "format": "yaml", "url": "https://my.server.com/common.yaml"}' \
-  -e DB_REDIS_URI='CONFIGO:{{or .DB_REDIS_URI .REDIS_URI "redis://localhost/0"}}' \
-  myAppImage
-```
-In this example, we are using the built-in `or` function. This will return the first non-empty argument or the last argument. The entire functionality of Go templates is available for use. More information can be found at https://golang.org/pkg/text/template/. 
-
-# Configuration
-See wiki for detailed explanation of configuration options, supported sources and more examples:
-https://github.com/zeroturnaround/configo/wiki
 
 # Thanks
 * http://projects.spring.io/spring-cloud/ - For inspiration (See Spring Cloud Config).
