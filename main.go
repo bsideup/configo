@@ -146,10 +146,15 @@ func processTemplatedEnvs(environ []string) error {
 		return true, nil
 	})
 
+	customFuncs := template.FuncMap{
+		"encrypt": encrypt,
+		"decrypt": decrypt,
+	}
+
 	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
 		CountBy(func(kv T) (bool, error) {
-		tmpl, err := template.New("").Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
+		tmpl, err := template.New(kv.(env).key).Funcs(customFuncs).Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
 
 		if err != nil {
 			return false, err
@@ -163,9 +168,14 @@ func processTemplatedEnvs(environ []string) error {
 		key := kv.(env).key
 		value := buffer.String()
 
-		log.Infof("Setting templated variable %s to %s", key, value)
+		log.Infof("Setting templated variable `%s` to `%#v`", key, value)
 
-		os.Setenv(key, value)
+		err = os.Setenv(key, value)
+
+		if err != nil {
+			return false, err
+		}
+
 		return true, nil
 	})
 
