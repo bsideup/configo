@@ -215,6 +215,21 @@ CONFIGO_SOURCE_0='{"type": "dynamodb", "table": "configs", "key": "myApp"}'
 ```
 ---
 
+### Vault
+This will use Hashicorp's Vault as a source.
+
+| Field      | Description                      | Required |
+|------------|----------------------------------|----------|
+| Address    | Where to connect.                |    Yes   |
+| Token      | Which token to use.              |    Yes   |
+| path       | Path to the secret.              |    yes   |
+
+Example:
+```bash
+CONFIGO_SOURCE_0='{"type": "vault", "address": "https://vault.corp.com:8200/", "token": "1d3cbbc9-f60a-7cf1-2626-6d4d5eb8b18c", "path": "secret/myapp"}'
+```
+---
+
 # Installation
 ## Prebuilt binaries
 Precompiled binaries are available as GitHub releases at https://github.com/zeroturnaround/configo/releases/latest. 

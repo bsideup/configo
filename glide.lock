@@ -1,5 +1,5 @@
-hash: cd7cf25288db3a8f5e65da372a4ad5cbcb8d9c803176c807bc749d135c979eaf
-updated: 2016-02-06T18:07:54.399425333Z
+hash: c2aa4518d87d25f7cfde3407227b2872c353bb8535cc2bed0ca8a2477f287c56
+updated: 2016-02-09T13:24:11.50673826+02:00
 imports:
 - name: github.com/ahmetalpbalkan/go-linq
   version: 32a9c2bd73213b024e8bd5a687927eaf9bdfe0b9
@@ -11,8 +11,10 @@ imports:
   - datadog
 - name: github.com/armon/go-radix
   version: 4239b77079c7b5d1243b7b4736304ce8ddb6f0f2
+- name: github.com/asaskevich/govalidator
+  version: 129580890d97de923d9d9aec06cb1aa771812aff
 - name: github.com/aws/aws-sdk-go
-  version: 371c1c6ff7101d2e4a11e9962075c86a6733d65a
+  version: 87b1e60a50b09e4812dee560b33a238f67305804
   subpackages:
   - aws
   - aws/credentials
@@ -34,15 +36,21 @@ imports:
   - private/waiter
   - private/protocol/json/jsonutil
   - private/protocol/rest
-  - private/protocol
+  - service/iam
+  - service/sts
+  - private/protocol/query
+  - service/s3
+  - private/protocol/query/queryutil
+  - private/protocol/xml/xmlutil
+  - private/protocol/restxml
 - name: github.com/bgentry/speakeasy
   version: 36e9cfdd690967f4f690c6edcc9ffacd006014a0
 - name: github.com/boltdb/bolt
-  version: ee4a0888a9abe7eefe5a0992ca4cb06864839873
+  version: 0b00effdd7a8270ebd91c24297e51643e370dd52
 - name: github.com/BurntSushi/toml
   version: 5c4df71dfe9ac89ef6287afc05e4c1b16ae65a1e
 - name: github.com/coreos/etcd
-  version: e7a5899582e71c2e3797e7c78ac426178e4bcc16
+  version: 37290820de4c76e905a43edded858dc28f2fe2c5
   subpackages:
   - Godeps/_workspace/src/golang.org/x/net/context
   - client
@@ -55,10 +63,12 @@ imports:
   - Godeps/_workspace/src/github.com/coreos/pkg/capnslog
   - Godeps/_workspace/src/github.com/prometheus/client_golang/prometheus
   - Godeps/_workspace/src/github.com/prometheus/procfs
+  - Godeps/_workspace/src/google.golang.org/grpc
   - discovery
   - etcdserver
   - etcdserver/api/v3rpc
   - etcdserver/etcdhttp
+  - etcdserver/etcdserverpb
   - pkg/cors
   - pkg/fileutil
   - pkg/flags
@@ -74,12 +84,18 @@ imports:
   - Godeps/_workspace/src/github.com/golang/protobuf/proto
   - Godeps/_workspace/src/github.com/prometheus/client_model/go
   - Godeps/_workspace/src/github.com/prometheus/common/expfmt
+  - Godeps/_workspace/src/golang.org/x/net/trace
+  - Godeps/_workspace/src/google.golang.org/grpc/codes
+  - Godeps/_workspace/src/google.golang.org/grpc/credentials
+  - Godeps/_workspace/src/google.golang.org/grpc/grpclog
+  - Godeps/_workspace/src/google.golang.org/grpc/metadata
+  - Godeps/_workspace/src/google.golang.org/grpc/naming
+  - Godeps/_workspace/src/google.golang.org/grpc/transport
   - Godeps/_workspace/src/github.com/jonboulle/clockwork
   - Godeps/_workspace/src/github.com/coreos/go-semver/semver
   - Godeps/_workspace/src/github.com/gogo/protobuf/proto
   - error
   - etcdserver/etcdhttp/httptypes
-  - etcdserver/etcdserverpb
   - etcdserver/stats
   - lease
   - lease/leasehttp
@@ -98,9 +114,6 @@ imports:
   - store
   - wal
   - wal/walpb
-  - Godeps/_workspace/src/google.golang.org/grpc
-  - Godeps/_workspace/src/google.golang.org/grpc/codes
-  - Godeps/_workspace/src/google.golang.org/grpc/credentials
   - etcdserver/auth
   - pkg/logutil
   - pkg/httputil
@@ -108,28 +121,29 @@ imports:
   - Godeps/_workspace/src/bitbucket.org/ww/goautoneg
   - Godeps/_workspace/src/github.com/matttproud/golang_protobuf_extensions/pbutil
   - Godeps/_workspace/src/github.com/prometheus/common/model
+  - Godeps/_workspace/src/golang.org/x/net/internal/timeseries
+  - Godeps/_workspace/src/golang.org/x/net/http2
+  - Godeps/_workspace/src/golang.org/x/net/http2/hpack
+  - Godeps/_workspace/src/google.golang.org/grpc/peer
   - lease/leasepb
   - snap/snappb
   - Godeps/_workspace/src/github.com/google/btree
   - Godeps/_workspace/src/github.com/boltdb/bolt
   - pkg/crc
-  - Godeps/_workspace/src/golang.org/x/net/trace
-  - Godeps/_workspace/src/google.golang.org/grpc/grpclog
-  - Godeps/_workspace/src/google.golang.org/grpc/metadata
-  - Godeps/_workspace/src/google.golang.org/grpc/naming
-  - Godeps/_workspace/src/google.golang.org/grpc/transport
   - Godeps/_workspace/src/golang.org/x/crypto/bcrypt
-  - Godeps/_workspace/src/golang.org/x/net/internal/timeseries
-  - Godeps/_workspace/src/golang.org/x/net/http2
-  - Godeps/_workspace/src/golang.org/x/net/http2/hpack
-  - Godeps/_workspace/src/google.golang.org/grpc/peer
   - Godeps/_workspace/src/golang.org/x/crypto/blowfish
 - name: github.com/DataDog/datadog-go
   version: bc97e0770ad4edae1c9dc14beb40b79b2dde32f8
   subpackages:
   - statsd
+- name: github.com/duosecurity/duo_api_golang
+  version: 16da9e74793f6d9b97b227a0696fe32bcdaecb42
+  subpackages:
+  - authapi
 - name: github.com/elazarl/go-bindata-assetfs
   version: 57eb5e1fc594ad4b0b1dbea7b286d299e0cb43c2
+- name: github.com/fatih/structs
+  version: a924a2250d1033753512e95dce41dca3fd793ad9
 - name: github.com/fsouza/go-dockerclient
   version: 0099401a7342ad77e71ca9f9a57c5e72fb80f6b2
   subpackages:
@@ -147,7 +161,6 @@ imports:
   - external/github.com/docker/docker/pkg/system
   - external/github.com/opencontainers/runc/libcontainer/user
   - external/golang.org/x/net/context
-  - external/github.com/docker/go-units
 - name: github.com/garyburd/redigo
   version: 836b6e58b3358112c8291565d01c35b8764070d7
   subpackages:
@@ -157,13 +170,34 @@ imports:
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-ini/ini
   version: afbd495e5aaea13597b5e14fe514ddeaa4d76fc3
+- name: github.com/go-ldap/ldap
+  version: f24903dc69b694cd18db4724d714ac47e4fad4f2
+- name: github.com/go-sql-driver/mysql
+  version: 7c7f556282622f94213bc028b4d0a7b6151ba239
+- name: github.com/gocql/gocql
+  version: 4fd9e05d55bae4c3732f98ef4e8aa7f006ead320
+  subpackages:
+  - internal/lru
+  - internal/murmur
+  - internal/streams
+- name: github.com/golang/snappy
+  version: 723cc1e459b8eea2dea4583200fd60757d40097a
+- name: github.com/google/go-github
+  version: b8b4ac742977310ff6e75140a403a38dab109977
+  subpackages:
+  - github
+- name: github.com/google/go-querystring
+  version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
+  subpackages:
+  - query
+- name: github.com/hailocab/go-hostpool
+  version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
 - name: github.com/hashicorp/consul
-  version: 6150b0c5bf683b27024c261980eddf67eba18e34
+  version: 40707934d26803d22c112f1bf37ce8e0e447901b
   subpackages:
   - api
   - command
   - command/agent
-  - lib
   - consul
   - watch
   - consul/state
@@ -193,20 +227,14 @@ imports:
 - name: github.com/hashicorp/go-uuid
   version: 36289988d83ca270bc07c234c36f364b0dd9c9a7
 - name: github.com/hashicorp/golang-lru
-  version: ce7dece472ba96dab1807940f0614f3254f883e7
+  version: 5c7531c003d8bf158b0fe5063649a2f41a822146
   subpackages:
   - simplelru
 - name: github.com/hashicorp/hcl
-  version: e96d23138c76470c808bf6586bdaf981bbd25cae
+  version: 4de51957ef8d4aba6e285ddfc587633bbfc7c0e8
   subpackages:
-  - hcl/ast
-  - hcl/parser
-  - hcl/token
-  - json/parser
-  - hcl/scanner
-  - hcl/strconv
-  - json/scanner
-  - json/token
+  - hcl
+  - json
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/memberlist
@@ -220,10 +248,54 @@ imports:
 - name: github.com/hashicorp/scada-client
   version: 84989fd23ad4cc0e7ad44d6a871fd793eb9beb0a
 - name: github.com/hashicorp/serf
-  version: c4c55f16bae1aed9b355ad655d3ebf0215734461
+  version: e4ec8cc423bbe20d26584b96efbeb9102e16d05f
   subpackages:
   - coordinate
   - serf
+- name: github.com/hashicorp/vault
+  version: 47309289ae8f53ff97be17a4ab21b4a5afa317ef
+  subpackages:
+  - api
+  - cli
+  - audit
+  - builtin/audit/file
+  - builtin/audit/syslog
+  - builtin/credential/app-id
+  - builtin/credential/cert
+  - builtin/credential/github
+  - builtin/credential/ldap
+  - builtin/credential/userpass
+  - builtin/logical/aws
+  - builtin/logical/cassandra
+  - builtin/logical/consul
+  - builtin/logical/mysql
+  - builtin/logical/pki
+  - builtin/logical/postgresql
+  - builtin/logical/ssh
+  - builtin/logical/transit
+  - command
+  - logical
+  - version
+  - helper/salt
+  - logical/framework
+  - helper/certutil
+  - helper/mfa
+  - helper/password
+  - helper/kdf
+  - command/server
+  - command/token
+  - helper/flag-kv
+  - helper/flag-slice
+  - helper/gated-writer
+  - helper/kv-builder
+  - helper/mlock
+  - helper/pgpkeys
+  - helper/xor
+  - http
+  - physical
+  - vault
+  - helper/mfa/duo
+  - shamir
 - name: github.com/hashicorp/yamux
   version: df949784da9ed028ee76df44652e42d37a09d7e4
 - name: github.com/inconshreveable/muxado
@@ -234,7 +306,11 @@ imports:
   - proto/frame
   - proto/buffer
 - name: github.com/jmespath/go-jmespath
-  version: 0b12d6b521d83fc7f755e7cfc1b1fbdd35a01a74
+  version: c01cf91b011868172fdcd9f41838e80c9d716264
+- name: github.com/lib/pq
+  version: 8ad2b298cadd691a77015666a5372eae5dbfac8f
+  subpackages:
+  - oid
 - name: github.com/magiconair/properties
   version: c81f9d71af8f8cba1466501d30326b99a4e56c19
 - name: github.com/mattn/go-isatty
@@ -243,16 +319,56 @@ imports:
   version: 83f7d658ac219335d42f7ec4397a76e35ca7f835
 - name: github.com/mitchellh/cli
   version: 5c87c51cedf76a1737bf5ca3979e8644871598a6
+- name: github.com/mitchellh/copystructure
+  version: 6fc66267e9da7d155a9d3bd489e00dad02666dc6
+- name: github.com/mitchellh/go-homedir
+  version: d682a8f0cf139663a984ff12528da460ca963de9
 - name: github.com/mitchellh/mapstructure
   version: 281073eb9eb092240d33ef253c404f1cca550309
+- name: github.com/mitchellh/reflectwalk
+  version: eecf4c70c626c7cfbb95c90195bc34d386c74ac6
 - name: github.com/op/go-logging
   version: 0882c9abce533ab4afbab5677fcef7434dd36d5a
 - name: github.com/ryanuber/columnize
   version: 983d3a5fab1bf04d1b412465d2d9f8430e2e917e
+- name: github.com/samuel/go-zookeeper
+  version: 218e9c81c0dd8b3b18172b2bbfad92cc7d6db55f
+  subpackages:
+  - zk
+- name: golang.org/x/crypto
+  version: 1351f936d976c60a0a48d728281922cf63eafb8d
+  subpackages:
+  - bcrypt
+  - blowfish
+  - ssh
+  - ssh/agent
+  - ssh/terminal
+  - openpgp
+  - openpgp/packet
+  - openpgp/armor
+  - openpgp/errors
+  - openpgp/s2k
+  - cast5
+  - openpgp/elgamal
+- name: golang.org/x/net
+  version: 04b9de9b512f58addf28c9853d50ebef61c3953e
+  subpackages:
+  - context
+  - http2
+  - internal/timeseries
+  - trace
+- name: golang.org/x/oauth2
+  version: 8a57ed94ffd43444c0879fe75701732a38afc985
+  subpackages:
+  - internal
 - name: golang.org/x/sys
   version: 9c60d1c508f5134d1ca726b4641db998f2523357
   subpackages:
   - unix
+- name: gopkg.in/asn1-ber.v1
+  version: 4e86f4367175e39f69d9358a5f17b4dda270378d
+- name: gopkg.in/inf.v0
+  version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
 - name: gopkg.in/yaml.v2
   version: f7716cbe52baa25d2e9b0d0da546fcf909fc16b4
 devImports: []
