@@ -45,9 +45,13 @@ func (dynamoDBSource *DynamoDBSource) Get() (map[string]interface{}, error) {
 
 	tableName := aws.String(dynamoDBSource.Table)
 
-	err := client.WaitUntilTableExists(&dynamodb.DescribeTableInput{TableName: tableName})
+	describeTableInput := &dynamodb.DescribeTableInput{TableName: tableName}
 
-	if err != nil {
+	if _, err := client.DescribeTable(describeTableInput); err != nil {
+		return nil, err
+	}
+
+	if err := client.WaitUntilTableExists(describeTableInput); err != nil {
 		return nil, err
 	}
 
