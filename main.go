@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
@@ -10,11 +9,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"text/template"
 )
 
 const envVariablePrefix = "CONFIGO_SOURCE_"
-const configoPrefix = "CONFIGO:"
 
 type env struct {
 	key   string
@@ -131,61 +128,6 @@ func resolveAll(environ []string) error {
 	} else {
 		if log.IsEnabledFor(logging.DEBUG) {
 			log.Debugf("Environment variables after resolve:\n\t%s", strings.Join(os.Environ(), "\n\t"))
-		}
-	}
-
-	return nil
-}
-
-func processTemplatedEnvs(environ []string) error {
-	envMap := make(map[string]string)
-
-	// Calculate fresh map of environment variables
-	fromEnviron(os.Environ()).All(func(kv T) (bool, error) {
-		envMap[kv.(env).key] = kv.(env).value
-		return true, nil
-	})
-
-	customFuncs := template.FuncMap{
-		"encrypt": encrypt,
-		"decrypt": decrypt,
-	}
-
-	count, err := fromEnviron(environ).
-		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
-		CountBy(func(kv T) (bool, error) {
-		tmpl, err := template.New(kv.(env).key).Funcs(customFuncs).Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
-
-		if err != nil {
-			return false, err
-		}
-
-		var buffer bytes.Buffer
-		if err = tmpl.Execute(&buffer, envMap); err != nil {
-			return false, err
-		}
-
-		key := kv.(env).key
-		value := buffer.String()
-
-		log.Infof("Setting templated variable `%s` to `%#v`", key, value)
-
-		err = os.Setenv(key, value)
-
-		if err != nil {
-			return false, err
-		}
-
-		return true, nil
-	})
-
-	if err != nil {
-		return err
-	}
-
-	if count > 0 {
-		if log.IsEnabledFor(logging.DEBUG) {
-			log.Debugf("Environment variables after templates:\n\t%s", strings.Join(os.Environ(), "\n\t"))
 		}
 	}
 
