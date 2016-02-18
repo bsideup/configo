@@ -46,30 +46,30 @@ func processTemplatedEnvs(environ []string) error {
 	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).value, configoPrefix), nil }).
 		CountBy(func(kv T) (bool, error) {
-		tmpl, err := template.New(kv.(env).key).Funcs(customFuncs).Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
+			tmpl, err := template.New(kv.(env).key).Funcs(customFuncs).Parse(strings.TrimPrefix(kv.(env).value, configoPrefix))
 
-		if err != nil {
-			return false, err
-		}
+			if err != nil {
+				return false, err
+			}
 
-		var buffer bytes.Buffer
-		if err = tmpl.Execute(&buffer, envMap); err != nil {
-			return false, err
-		}
+			var buffer bytes.Buffer
+			if err = tmpl.Execute(&buffer, envMap); err != nil {
+				return false, err
+			}
 
-		key := kv.(env).key
-		value := buffer.String()
+			key := kv.(env).key
+			value := buffer.String()
 
-		log.Infof("Setting templated variable `%s` to `%#v`", key, value)
+			log.Infof("Setting templated variable `%s` to `%#v`", key, value)
 
-		err = os.Setenv(key, value)
+			err = os.Setenv(key, value)
 
-		if err != nil {
-			return false, err
-		}
+			if err != nil {
+				return false, err
+			}
 
-		return true, nil
-	})
+			return true, nil
+		})
 
 	if err != nil {
 		return err

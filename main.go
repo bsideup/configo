@@ -84,40 +84,40 @@ func resolveAll(environ []string) error {
 	count, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).key, envVariablePrefix), nil }).
 		Select(func(kv T) (T, error) {
-		priority, err := strconv.Atoi(strings.TrimLeft(kv.(env).key, envVariablePrefix))
-		if err != nil {
-			return nil, err
-		}
-		return sourceContext{priority, kv.(env).value, nil, nil}, nil
-	}).
+			priority, err := strconv.Atoi(strings.TrimLeft(kv.(env).key, envVariablePrefix))
+			if err != nil {
+				return nil, err
+			}
+			return sourceContext{priority, kv.(env).value, nil, nil}, nil
+		}).
 		OrderBy(func(a T, b T) bool { return a.(sourceContext).priority <= b.(sourceContext).priority }).
 		Select(func(context T) (T, error) {
-		loader, err := GetSource(context.(sourceContext).value)
+			loader, err := GetSource(context.(sourceContext).value)
 
-		if err != nil {
-			return nil, fmt.Errorf("Failed to parse source #%d: %s", context.(sourceContext).priority, err)
-		}
-		return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, loader, nil}, nil
-	}).
+			if err != nil {
+				return nil, fmt.Errorf("Failed to parse source #%d: %s", context.(sourceContext).priority, err)
+			}
+			return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, loader, nil}, nil
+		}).
 		// Resolve in parallel because some sources might use IO and will take some time
 		AsParallel().AsOrdered().
 		Select(func(context T) (T, error) {
-		result, err := context.(sourceContext).loader.Get()
+			result, err := context.(sourceContext).loader.Get()
 
-		if err != nil {
-			return nil, fmt.Errorf("Failed to resolve source #%d: %s", context.(sourceContext).priority, err)
-		}
+			if err != nil {
+				return nil, fmt.Errorf("Failed to resolve source #%d: %s", context.(sourceContext).priority, err)
+			}
 
-		return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, context.(sourceContext).loader, result}, nil
-	}).
+			return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, context.(sourceContext).loader, result}, nil
+		}).
 		AsSequential().
 		CountBy(func(context T) (bool, error) {
-		for key, value := range flatmap.Flatten(context.(sourceContext).partialConfig) {
-			log.Infof("Source #%d: Setting %s to %v", context.(sourceContext).priority, key, value)
-			os.Setenv(key, fmt.Sprintf("%v", value))
-		}
-		return true, nil
-	})
+			for key, value := range flatmap.Flatten(context.(sourceContext).partialConfig) {
+				log.Infof("Source #%d: Setting %s to %v", context.(sourceContext).priority, key, value)
+				os.Setenv(key, fmt.Sprintf("%v", value))
+			}
+			return true, nil
+		})
 
 	if err != nil {
 		return err
