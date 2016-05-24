@@ -29,7 +29,7 @@ EOC
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 
-  assert_failure "Failed to resolve source #0: 400 Bad Request"
+  assert_failure "Failed to resolve source: 400 Bad Request"
 }
 
 @test "sources: HTTP with Cert auth works" {
@@ -65,7 +65,7 @@ EOC
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 
-  assert_failure "Failed to resolve source #0: Get https://nginx/test.json: x509: certificate signed by unknown authority"
+  assert_failure "Failed to resolve source: Get https://nginx/test.json: x509: certificate signed by unknown authority"
 }
 
 @test "sources: HTTP with insecure source and insecure:true works" {

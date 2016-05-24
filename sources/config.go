@@ -1,10 +1,8 @@
-package main
+package sources
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/mitchellh/mapstructure"
-	"github.com/zeroturnaround/configo/sources"
 	"reflect"
 )
 
@@ -16,27 +14,21 @@ type Source interface {
 }
 
 var configMappings = map[string]reflect.Type{
-	"consul":   reflect.TypeOf(sources.ConsulSource{}),
-	"dynamodb": reflect.TypeOf(sources.DynamoDBSource{}),
-	"etcd":     reflect.TypeOf(sources.EtcdSource{}),
-	"file":     reflect.TypeOf(sources.FileSource{}),
-	"http":     reflect.TypeOf(sources.HTTPSource{}),
-	"redis":    reflect.TypeOf(sources.RedisSource{}),
-	"shell":    reflect.TypeOf(sources.ShellSource{}),
-	"vault":    reflect.TypeOf(sources.VaultSource{}),
+	"composite": reflect.TypeOf(CompositeSource{}),
+	"consul":    reflect.TypeOf(ConsulSource{}),
+	"dynamodb":  reflect.TypeOf(DynamoDBSource{}),
+	"etcd":      reflect.TypeOf(EtcdSource{}),
+	"file":      reflect.TypeOf(FileSource{}),
+	"http":      reflect.TypeOf(HTTPSource{}),
+	"redis":     reflect.TypeOf(RedisSource{}),
+	"shell":     reflect.TypeOf(ShellSource{}),
+	"vault":     reflect.TypeOf(VaultSource{}),
 }
 
-// GetSource resolves source by string (in JSON format).
+// GetSource resolves source from a map.
 // Source must contain at least one property with name "type", which will be
 // used to select proper source implementation.
-func GetSource(source string) (Source, error) {
-	rawSource := make(map[string]interface{})
-
-	sourceBytes := []byte(source)
-	if err := json.Unmarshal(sourceBytes, &rawSource); err != nil {
-		return nil, err
-	}
-
+func GetSource(rawSource map[string]interface{}) (Source, error) {
 	sourceType, found := configMappings[rawSource["type"].(string)]
 	if !found {
 		return nil, fmt.Errorf("Failed to find source type: %s", rawSource["type"])
