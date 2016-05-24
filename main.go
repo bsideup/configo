@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
-	"github.com/zeroturnaround/configo/flatmap"
+	"github.com/zeroturnaround/configo/sources"
 	"os"
 	"strconv"
 	"strings"
@@ -18,11 +19,9 @@ type env struct {
 	value string
 }
 
-type sourceContext struct {
-	priority      int
-	value         string
-	loader        Source
-	partialConfig map[string]interface{}
+type sourceWithPriority struct {
+	priority int
+	value    string
 }
 
 var log = logging.MustGetLogger("configo")
@@ -81,54 +80,59 @@ func main() {
 }
 
 func resolveAll(environ []string) error {
-	count, err := fromEnviron(environ).
+	rawTSources, err := fromEnviron(environ).
 		Where(func(kv T) (bool, error) { return strings.HasPrefix(kv.(env).key, envVariablePrefix), nil }).
 		Select(func(kv T) (T, error) {
 			priority, err := strconv.Atoi(strings.TrimLeft(kv.(env).key, envVariablePrefix))
 			if err != nil {
 				return nil, err
 			}
-			return sourceContext{priority, kv.(env).value, nil, nil}, nil
+			return sourceWithPriority{priority, kv.(env).value}, nil
 		}).
-		OrderBy(func(a T, b T) bool { return a.(sourceContext).priority <= b.(sourceContext).priority }).
-		Select(func(context T) (T, error) {
-			loader, err := GetSource(context.(sourceContext).value)
-
-			if err != nil {
-				return nil, fmt.Errorf("Failed to parse source #%d: %s", context.(sourceContext).priority, err)
-			}
-			return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, loader, nil}, nil
+		OrderBy(func(a T, b T) bool { return a.(sourceWithPriority).priority <= b.(sourceWithPriority).priority }).
+		Select(func(it T) (T, error) {
+			sourceBytes := []byte(it.(sourceWithPriority).value)
+			rawSource := make(map[string]interface{})
+			err := json.Unmarshal(sourceBytes, &rawSource)
+			return rawSource, err
 		}).
-		// Resolve in parallel because some sources might use IO and will take some time
-		AsParallel().AsOrdered().
-		Select(func(context T) (T, error) {
-			result, err := context.(sourceContext).loader.Get()
-
-			if err != nil {
-				return nil, fmt.Errorf("Failed to resolve source #%d: %s", context.(sourceContext).priority, err)
-			}
-
-			return sourceContext{context.(sourceContext).priority, context.(sourceContext).value, context.(sourceContext).loader, result}, nil
-		}).
-		AsSequential().
-		CountBy(func(context T) (bool, error) {
-			for key, value := range flatmap.Flatten(context.(sourceContext).partialConfig) {
-				log.Infof("Source #%d: Setting %s to %v", context.(sourceContext).priority, key, value)
-				os.Setenv(key, fmt.Sprintf("%v", value))
-			}
-			return true, nil
-		})
+		Results()
 
 	if err != nil {
 		return err
 	}
 
-	if count == 0 {
+	rawSources := make([]map[string]interface{}, len(rawTSources))
+
+	for k, v := range rawTSources {
+		rawSources[k] = v.(map[string]interface{})
+	}
+
+	if len(rawSources) == 0 {
 		log.Warning("No sources provided")
-	} else {
-		if log.IsEnabledFor(logging.DEBUG) {
-			log.Debugf("Environment variables after resolve:\n\t%s", strings.Join(os.Environ(), "\n\t"))
-		}
+		return nil
+	}
+
+	loader := sources.CompositeSource{rawSources}
+
+	resultEnv, err := loader.Get()
+
+	if err != nil {
+		return err
+	}
+
+	if len(resultEnv) == 0 {
+		log.Info("No new env variables were added.")
+		return nil
+	}
+
+	for key, value := range resultEnv {
+		log.Infof("Setting %s to %v", key, value)
+		os.Setenv(key, fmt.Sprintf("%v", value))
+	}
+
+	if log.IsEnabledFor(logging.DEBUG) {
+		log.Debugf("Environment variables after resolve:\n\t%s", strings.Join(os.Environ(), "\n\t"))
 	}
 
 	return nil
