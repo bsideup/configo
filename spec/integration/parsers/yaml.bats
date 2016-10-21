@@ -7,6 +7,9 @@ load ../test_helper
   /bin/cat <<EOF >/test.yml
 test:
   property: 123
+  property1: NULL
+  property2: null
+  property4: 'null'
 EOF
 
   export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.yml", "format": "yaml"}'
