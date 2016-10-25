@@ -113,7 +113,9 @@ func resolveAll(environ []string) error {
 		return nil
 	}
 
-	loader := sources.CompositeSource{rawSources}
+	loader := sources.CompositeSource{
+		Sources: rawSources,
+	}
 
 	resultEnv, err := loader.Get()
 

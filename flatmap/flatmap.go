@@ -27,6 +27,8 @@ func flatten(result map[string]interface{}, prefix string, v reflect.Value) {
 	}
 
 	switch v.Kind() {
+	case reflect.Invalid:
+		return
 	case reflect.Map:
 		flattenMap(result, prefix, v)
 	case reflect.Slice:
