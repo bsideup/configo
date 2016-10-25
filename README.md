@@ -46,7 +46,7 @@ First, change your Dockerfile ever so slightly:
 ```diff
 FROM node
 
-+RUN curl -L https://github.com/zeroturnaround/configo/releases/download/v0.1.0/configo.linux-amd64 >/usr/local/bin/configo && \
++RUN curl -L https://github.com/zeroturnaround/configo/releases/download/v0.4.1/configo.linux-amd64 >/usr/local/bin/configo && \
 +    chmod +x /usr/local/bin/configo
 
 ADD . /app
