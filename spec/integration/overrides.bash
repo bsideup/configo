@@ -16,9 +16,9 @@ EOF
 
   echo "test_property: overrided" >/test3.yml
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test1.yml", "format": "yaml"}'
-  export CONFIGO_SOURCE_1='{"type": "file", "path": "/test2.yml", "format": "yaml"}'
-  export CONFIGO_SOURCE_2='{"type": "file", "path": "/test3.yml", "format": "yaml"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test1.yml, format: yaml'
+  export CONFIGO_SOURCE_1='type: file, path: /test2.yml, format: yaml'
+  export CONFIGO_SOURCE_2='type: file, path: /test3.yml, format: yaml'
   configo 'echo $TEST_PROPERTY $ANOTHER_PROPERTY $THIRD_PROPERTY'
 EOC
 
@@ -36,8 +36,8 @@ EOF
 another_property: null
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test1.yml", "format": "yaml"}'
-  export CONFIGO_SOURCE_1='{"type": "file", "path": "/test2.yml", "format": "yaml"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test1.yml, format: yaml'
+  export CONFIGO_SOURCE_1='type: file, path: /test2.yml, format: yaml'
   configo 'echo $TEST_PROPERTY $ANOTHER_PROPERTY'
 EOC
 

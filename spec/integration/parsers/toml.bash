@@ -9,7 +9,7 @@ load ../test_helper
 property = 123
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.toml", "format": "toml"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test.toml, format: toml'
   configo printenv TEST_PROPERTY
 EOC
 

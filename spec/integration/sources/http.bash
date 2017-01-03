@@ -25,7 +25,7 @@ service nginx reload
 EOC
 
   run_container_with_parameters "--link $CONTAINER_ID:nginx" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "http", "format": "json", "url": "https://nginx/test.json", "insecure": true}'
+  export CONFIGO_SOURCE_0='type: http, format: json, url: "https://nginx/test.json", insecure: true'
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 
@@ -40,17 +40,15 @@ service nginx reload
 EOC
 
   run_container_with_parameters "--link $CONTAINER_ID:nginx --volumes-from=$CONTAINER_ID" <<'EOC'
-  export CONFIGO_SOURCE_0=$(cat <<EOF | tr -d "\n"
-{
-  "type": "http",
-  "format": "json",
-  "url": "https://nginx/test.json",
-  "insecure": true,
-  "tls": {
-    "cert": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/fullchain.pem)",
-    "key": "$(while read -r line; do printf "%s\\\n" "$line"; done </etc/nginx/ssl/privkey.pem)"
-  }
-}
+  export CONFIGO_SOURCE_0=$(cat <<EOF
+    type: http
+    format: json
+    url: "https://nginx/test.json"
+    insecure: true
+    tls {
+      cert: """$(cat etc/nginx/ssl/fullchain.pem)"""
+      key: """$(cat /etc/nginx/ssl/privkey.pem)"""
+    }
 EOF
 )
   configo printenv SOME_NESTED_STRUCTURE
@@ -61,7 +59,7 @@ EOC
 
 @test "sources: HTTP with insecure source should fail" {
   run_container_with_parameters "--link $CONTAINER_ID:nginx -v /etc/ssl/certs:/etc/ssl/certs" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "http", "format": "json", "url": "https://nginx/test.json"}'
+  export CONFIGO_SOURCE_0='type: http, format: json, url: "https://nginx/test.json"'
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 
@@ -70,7 +68,7 @@ EOC
 
 @test "sources: HTTP with insecure source and insecure:true works" {
   run_container_with_parameters "--link $CONTAINER_ID:nginx" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "http", "format": "json", "url": "https://nginx/test.json", "insecure": true}'
+  export CONFIGO_SOURCE_0='type: http, format: json, url: "https://nginx/test.json", insecure: true'
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 
@@ -79,7 +77,7 @@ EOC
 
 @test "sources: HTTP works" {
   run_container_with_parameters "--link $CONTAINER_ID:nginx" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "http", "format": "json", "url": "http://nginx/test.json"}'
+  export CONFIGO_SOURCE_0='type: http, format: json, url: "http://nginx/test.json"'
   configo printenv SOME_NESTED_STRUCTURE
 EOC
 

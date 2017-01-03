@@ -12,7 +12,7 @@ load ../test_helper
 }
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.json", "format": "json"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test.json, format: json'
   configo printenv TEST_PROPERTY
 EOC
 

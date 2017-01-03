@@ -8,7 +8,7 @@ load ../test_helper
 test_property = 123
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.hcl", "format": "hcl"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test.hcl, format: hcl'
   configo printenv TEST_PROPERTY
 EOC
 

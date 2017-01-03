@@ -36,6 +36,8 @@ func GetParser(format string) Parser {
 		return &TOMLParser{}
 	case "properties", "props", "prop":
 		return &PropertiesParser{}
+	case "hocon":
+		return &HOCONParser{}
 	}
 
 	return nil
