@@ -7,6 +7,7 @@ machine:
     - test -e download/$GODIST || curl -o download/$GODIST https://storage.googleapis.com/golang/$GODIST
     - sudo rm -rf /usr/local/go
     - sudo tar -C /usr/local -xzf download/$GODIST
+    - sudo chmod -R 777 /usr/local/go/
 dependencies:
   pre:
     - make bootstrap
