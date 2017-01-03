@@ -9,7 +9,7 @@ setup() {
 
 @test "sources: Etcd works" {
   run_container_with_parameters "--link $CONTAINER_ID:etcd" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "etcd", "endpoints": ["http://etcd:4001"], "prefix": "myApp/"}'
+  export CONFIGO_SOURCE_0='type: etcd, endpoints: ["http://etcd:4001"], prefix: "myApp/"'
   configo printenv TEST_PROPERTY
 EOC
 
@@ -18,7 +18,7 @@ EOC
 
 @test "sources: Etcd with KeepPrefix works" {
   run_container_with_parameters "--link $CONTAINER_ID:etcd" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "etcd", "endpoints": ["http://etcd:4001"], "prefix": "myApp/", "keepPrefix": true}'
+  export CONFIGO_SOURCE_0='type: etcd, endpoints: ["http://etcd:4001"], prefix: "myApp/", keepPrefix: true'
   configo printenv MYAPP_TEST_PROPERTY
 EOC
 

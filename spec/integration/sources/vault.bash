@@ -21,7 +21,7 @@ EOF
   TOKEN=$(docker exec $CONTAINER_ID vault token-create | grep "token " | tr -s ' ' | cut -f2 | tr -d '\r')
 
   run_container_with_parameters "--link $CONTAINER_ID:vault" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "vault", "address": "http://vault:8201/", "token": "$TOKEN", "path": "secret/myapp"}'
+  export CONFIGO_SOURCE_0='type: vault, address: "http://vault:8201/", token: "$TOKEN", path: "secret/myapp"'
   configo printenv TEST_PROPERTY
 EOC
 

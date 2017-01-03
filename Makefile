@@ -10,9 +10,7 @@ ifdef GOOS
 BINARY_PATH :=$(BINARY_PATH).$(GOOS)-$(GOARCH)
 endif
 
-SPECS ?= spec/integration/**
-
-export GO15VENDOREXPERIMENT=1
+SPECS ?= spec/integration/**/**
 
 default: build
 	
@@ -44,4 +42,4 @@ itest:
 
 bootstrap:
 	go get github.com/Masterminds/glide
-	glide install --use-gopath --cache-gopath
+	glide install

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
+	"github.com/zeroturnaround/configo/parsers"
 	"github.com/zeroturnaround/configo/sources"
 	"os"
 	"strconv"
@@ -90,10 +90,17 @@ func resolveAll(environ []string) error {
 			return sourceWithPriority{priority, kv.(env).value}, nil
 		}).
 		OrderBy(func(a T, b T) bool { return a.(sourceWithPriority).priority <= b.(sourceWithPriority).priority }).
-		Select(func(it T) (T, error) {
-			sourceBytes := []byte(it.(sourceWithPriority).value)
+		Select(func(it T) (result T, err error) {
+			source := it.(sourceWithPriority)
+			sourceBytes := []byte(source.value)
+
+			defer func() {
+				if errMsg := recover(); errMsg != nil {
+					err = fmt.Errorf("Failed to parse config #%v: %v", source.priority, errMsg)
+				}
+			}()
 			rawSource := make(map[string]interface{})
-			err := json.Unmarshal(sourceBytes, &rawSource)
+			err = parsers.MustGetParser("hocon").Parse(sourceBytes, rawSource)
 			return rawSource, err
 		}).
 		Results()

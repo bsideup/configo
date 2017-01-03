@@ -22,7 +22,7 @@ EOC
 
 @test "sources: DynamoDB works" {
   run_container_with_parameters "--link $CONTAINER_ID:dynamodb" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "dynamodb", "endpoint": "http://dynamodb:8000/", "accessKey":"dummy", "secretKey": "dummy", "table": "configs", "key": "myApp"}'
+  export CONFIGO_SOURCE_0='type: dynamodb, endpoint: "http://dynamodb:8000/", accessKey: dummy, secretKey: dummy, table: configs, key: myApp'
   configo printenv TEST_PROPERTY
 EOC
 
@@ -31,7 +31,7 @@ EOC
 
 @test "sources: DynamoDB should fail fast if table was not found" {
   run_container_with_parameters "--link $CONTAINER_ID:dynamodb" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "dynamodb", "endpoint": "http://dynamodb:8000/", "accessKey":"dummy", "secretKey": "dummy", "table": "NON_EXISTING_TABLE", "key": "myApp"}'
+  export CONFIGO_SOURCE_0='type: dynamodb, endpoint: "http://dynamodb:8000/", accessKey: dummy, secretKey: dummy, table: NON_EXISTING_TABLE, key: myApp'
   configo printenv TEST_PROPERTY
 EOC
 

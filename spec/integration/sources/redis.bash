@@ -7,7 +7,7 @@ load ../test_helper
   docker run -i --rm --link $CONTAINER_ID:redis redis:3.0.6-alpine redis-cli -h redis hset myAppConfig TEST_PROPERTY 123
   
   run_container_with_parameters "--link $CONTAINER_ID:redis" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "redis", "uri": "redis://redis/0", "key": "myAppConfig"}'
+  export CONFIGO_SOURCE_0='type: redis, uri: "redis://redis/0", key: myAppConfig'
   configo printenv TEST_PROPERTY
 EOC
 

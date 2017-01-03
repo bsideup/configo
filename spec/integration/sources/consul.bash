@@ -7,7 +7,7 @@ load ../test_helper
   for i in {1..5}; do [ "$(docker run --label configo="true" -i --rm --link $CONTAINER_ID:consul --entrypoint=/usr/bin/curl gliderlabs/consul:0.6 -sSL -X PUT -d 'test' http://consul:8500/v1/kv/myAppConfig/TEST_PROPERTY)" = "true" ] && break || sleep 1; done
   
   run_container_with_parameters "--link $CONTAINER_ID:consul" <<EOC
-  export CONFIGO_SOURCE_0='{"type": "consul", "address": "consul:8500", "scheme": "http", "prefix": "myAppConfig"}'
+  export CONFIGO_SOURCE_0='type: consul, address: "consul:8500", scheme: http, prefix: myAppConfig'
   configo printenv TEST_PROPERTY
 EOC
 

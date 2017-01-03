@@ -8,7 +8,7 @@ load ../test_helper
 test_property=123
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.properties", "format": "properties"}'
+  export CONFIGO_SOURCE_0='type: file, path: /test.properties, format: properties'
   configo printenv TEST_PROPERTY
 EOC
 

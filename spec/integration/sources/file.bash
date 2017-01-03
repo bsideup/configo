@@ -9,7 +9,7 @@ test:
   property: 123
 EOF
 
-  export CONFIGO_SOURCE_0='{"type": "file", "path": "/test.yml", "format": "yaml"}'
+  export CONFIGO_SOURCE_0='type: file, path: "/test.yml", format: yaml'
   configo printenv TEST_PROPERTY
 EOC
 
