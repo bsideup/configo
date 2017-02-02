@@ -3,7 +3,6 @@ package flatmap
 import (
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 // Flatten takes a structure and turns into a flat map[string]interface{}.
@@ -34,7 +33,7 @@ func flatten(result map[string]interface{}, prefix string, v reflect.Value) {
 	case reflect.Slice:
 		flattenSlice(result, prefix, v)
 	default:
-		result[strings.ToUpper(prefix)] = v.Interface()
+		result[prefix] = v.Interface()
 	}
 }
 
