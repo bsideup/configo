@@ -113,8 +113,14 @@ func resolveAll(environ []string) error {
 		return nil
 	}
 
+	uppercaseKeys := true
+	if os.Getenv("CONFIGO_UPPERCASE_KEYS") == "0" {
+		uppercaseKeys = false
+	}
+
 	loader := sources.CompositeSource{
 		Sources: rawSources,
+		UppercaseKeys: uppercaseKeys,
 	}
 
 	resultEnv, err := loader.Get()

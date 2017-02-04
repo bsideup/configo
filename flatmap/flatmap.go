@@ -3,6 +3,7 @@ package flatmap
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Flatten takes a structure and turns into a flat map[string]interface{}.
@@ -10,17 +11,17 @@ import (
 // Within the "thing" parameter, only primitive values are allowed. Structs are
 // not supported. Therefore, it can only be slices, maps, primitives, and
 // any combination of those together.
-func Flatten(thing map[string]interface{}) map[string]interface{} {
+func Flatten(thing map[string]interface{}, uppercaseKeys bool) map[string]interface{} {
 	result := make(map[string]interface{})
 
 	for k, raw := range thing {
-		flatten(result, k, reflect.ValueOf(raw))
+		flatten(result, k, reflect.ValueOf(raw), uppercaseKeys)
 	}
 
 	return result
 }
 
-func flatten(result map[string]interface{}, prefix string, v reflect.Value) {
+func flatten(result map[string]interface{}, prefix string, v reflect.Value, uppercaseKeys bool) {
 	if v.Kind() == reflect.Interface {
 		v = v.Elem()
 	}
@@ -29,15 +30,18 @@ func flatten(result map[string]interface{}, prefix string, v reflect.Value) {
 	case reflect.Invalid:
 		return
 	case reflect.Map:
-		flattenMap(result, prefix, v)
+		flattenMap(result, prefix, v, uppercaseKeys)
 	case reflect.Slice:
-		flattenSlice(result, prefix, v)
+		flattenSlice(result, prefix, v, uppercaseKeys)
 	default:
+		if uppercaseKeys {
+			prefix = strings.ToUpper(prefix)
+		}
 		result[prefix] = v.Interface()
 	}
 }
 
-func flattenMap(result map[string]interface{}, prefix string, v reflect.Value) {
+func flattenMap(result map[string]interface{}, prefix string, v reflect.Value, uppercaseKeys bool) {
 	for _, k := range v.MapKeys() {
 		if k.Kind() == reflect.Interface {
 			k = k.Elem()
@@ -47,14 +51,14 @@ func flattenMap(result map[string]interface{}, prefix string, v reflect.Value) {
 			panic(fmt.Sprintf("%s: map key is not string: %s", prefix, k))
 		}
 
-		flatten(result, fmt.Sprintf("%s_%s", prefix, k.String()), v.MapIndex(k))
+		flatten(result, fmt.Sprintf("%s_%s", prefix, k.String()), v.MapIndex(k), uppercaseKeys)
 	}
 }
 
-func flattenSlice(result map[string]interface{}, prefix string, v reflect.Value) {
+func flattenSlice(result map[string]interface{}, prefix string, v reflect.Value, uppercaseKeys bool) {
 	prefix = prefix + "_"
 
 	for i := 0; i < v.Len(); i++ {
-		flatten(result, fmt.Sprintf("%s%d", prefix, i), v.Index(i))
+		flatten(result, fmt.Sprintf("%s%d", prefix, i), v.Index(i), uppercaseKeys)
 	}
 }

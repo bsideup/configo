@@ -8,6 +8,7 @@ import (
 
 type CompositeSource struct {
 	Sources []map[string]interface{} `json:"sources"`
+	UppercaseKeys bool
 }
 
 func (compositeSource *CompositeSource) Get() (map[string]interface{}, error) {
@@ -37,7 +38,7 @@ func (compositeSource *CompositeSource) Get() (map[string]interface{}, error) {
 		}).
 		AsSequential().
 		CountBy(func(partialConfig T) (bool, error) {
-			for key, value := range flatmap.Flatten(partialConfig.(map[string]interface{})) {
+			for key, value := range flatmap.Flatten(partialConfig.(map[string]interface{}), compositeSource.UppercaseKeys) {
 				resultEnv[key] = value
 			}
 			return true, nil
