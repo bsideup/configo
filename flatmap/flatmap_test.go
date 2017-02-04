@@ -72,7 +72,7 @@ func TestFlatten(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		actual := Flatten(tc.Input)
+		actual := Flatten(tc.Input, true)
 		if !reflect.DeepEqual(actual, map[string]interface{}(tc.Output)) {
 			t.Fatalf(
 				"Input:\n\n%#v\n\nOutput:\n\n%#v\n\nExpected:\n\n%#v\n",
