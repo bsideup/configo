@@ -8,7 +8,6 @@ import (
 
 type CompositeSource struct {
 	Sources []map[string]interface{} `json:"sources"`
-	UppercaseKeys bool
 }
 
 func (compositeSource *CompositeSource) Get() (map[string]interface{}, error) {

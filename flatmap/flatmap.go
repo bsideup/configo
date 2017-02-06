@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Flag to uppercase keys in the flat map
 var UppercaseKeys = true
 
 // Flatten takes a structure and turns into a flat map[string]interface{}.
