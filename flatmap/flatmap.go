@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// Flag to uppercase keys in the flat map
+var UppercaseKeys = true
+
 // Flatten takes a structure and turns into a flat map[string]interface{}.
 //
 // Within the "thing" parameter, only primitive values are allowed. Structs are
@@ -34,7 +37,10 @@ func flatten(result map[string]interface{}, prefix string, v reflect.Value) {
 	case reflect.Slice:
 		flattenSlice(result, prefix, v)
 	default:
-		result[strings.ToUpper(prefix)] = v.Interface()
+		if UppercaseKeys {
+			prefix = strings.ToUpper(prefix)
+		}
+		result[prefix] = v.Interface()
 	}
 }
 

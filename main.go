@@ -6,6 +6,7 @@ import (
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
+	"github.com/zeroturnaround/configo/flatmap"
 	"github.com/zeroturnaround/configo/sources"
 	"os"
 	"strconv"
@@ -111,6 +112,10 @@ func resolveAll(environ []string) error {
 	if len(rawSources) == 0 {
 		log.Warning("No sources provided")
 		return nil
+	}
+
+	if os.Getenv("CONFIGO_UPPERCASE_KEYS") == "0" {
+		flatmap.UppercaseKeys = false
 	}
 
 	loader := sources.CompositeSource{
