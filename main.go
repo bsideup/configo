@@ -6,6 +6,7 @@ import (
 	. "github.com/ahmetalpbalkan/go-linq"
 	"github.com/op/go-logging"
 	"github.com/zeroturnaround/configo/exec"
+	"github.com/zeroturnaround/configo/flatmap"
 	"github.com/zeroturnaround/configo/sources"
 	"os"
 	"strconv"
@@ -113,14 +114,12 @@ func resolveAll(environ []string) error {
 		return nil
 	}
 
-	uppercaseKeys := true
 	if os.Getenv("CONFIGO_UPPERCASE_KEYS") == "0" {
-		uppercaseKeys = false
+		flatmap.UppercaseKeys = false
 	}
 
 	loader := sources.CompositeSource{
 		Sources: rawSources,
-		UppercaseKeys: uppercaseKeys,
 	}
 
 	resultEnv, err := loader.Get()

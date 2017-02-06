@@ -38,7 +38,7 @@ func (compositeSource *CompositeSource) Get() (map[string]interface{}, error) {
 		}).
 		AsSequential().
 		CountBy(func(partialConfig T) (bool, error) {
-			for key, value := range flatmap.Flatten(partialConfig.(map[string]interface{}), compositeSource.UppercaseKeys) {
+			for key, value := range flatmap.Flatten(partialConfig.(map[string]interface{})) {
 				resultEnv[key] = value
 			}
 			return true, nil
