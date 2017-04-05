@@ -1,10 +1,10 @@
-# Configo [![Build Status](https://travis-ci.org/zeroturnaround/configo.svg?branch=master)](https://travis-ci.org/zeroturnaround/configo) [![Goreport](https://goreportcard.com/badge/github.com/zeroturnaround/configo)](https://goreportcard.com/report/github.com/zeroturnaround/configo) [![Join the chat at https://gitter.im/zeroturnaround/configo](https://badges.gitter.im/zeroturnaround/configo.svg)](https://gitter.im/zeroturnaround/configo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Approved issues](https://badge.waffle.io/zeroturnaround/configo.svg?label=ready&title=Waffle.io)](http://waffle.io/zeroturnaround/configo)
+# Configo [![Build Status](https://travis-ci.org/bsideup/configo.svg?branch=master)](https://travis-ci.org/bsideup/configo) [![Goreport](https://goreportcard.com/badge/github.com/bsideup/configo)](https://goreportcard.com/report/github.com/bsideup/configo) [![Join the chat at https://gitter.im/bsideup/configo](https://badges.gitter.im/bsideup/configo.svg)](https://gitter.im/bsideup/configo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Approved issues](https://badge.waffle.io/bsideup/configo.svg?label=ready&title=Waffle.io)](http://waffle.io/bsideup/configo)
 
 **Configo** helps running **12factor** (http://12factor.net/config) applications by loading environment variables from different sources.
 
 # Configuration
 See wiki for detailed explanation of configuration options, supported sources and more examples:
-https://github.com/zeroturnaround/configo/wiki
+https://github.com/bsideup/configo/wiki
 
 # Usage
 Imagine having an application that is configurable with environment variables. Let us assume that this is a self-contained (http://12factor.net/processes) **NodeJS** application, and that we have a **Docker** image for it:
@@ -46,7 +46,7 @@ First, change your Dockerfile ever so slightly:
 ```diff
 FROM node
 
-+RUN curl -L https://github.com/zeroturnaround/configo/releases/download/v0.4.1/configo.linux-amd64 >/usr/local/bin/configo && \
++RUN curl -L https://github.com/bsideup/configo/releases/download/v0.4.1/configo.linux-amd64 >/usr/local/bin/configo && \
 +    chmod +x /usr/local/bin/configo
 
 ADD . /app
