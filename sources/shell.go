@@ -1,8 +1,8 @@
 package sources
 
 import (
-	"github.com/zeroturnaround/configo/exec"
-	"github.com/zeroturnaround/configo/parsers"
+	"github.com/bsideup/configo/exec"
+	"github.com/bsideup/configo/parsers"
 )
 
 type ShellSource struct {

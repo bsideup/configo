@@ -1,7 +1,7 @@
 package sources
 
 import (
-	"github.com/zeroturnaround/configo/parsers"
+	"github.com/bsideup/configo/parsers"
 	"io/ioutil"
 )
 

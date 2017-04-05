@@ -1,4 +1,4 @@
-package: github.com/zeroturnaround/configo
+package: github.com/bsideup/configo
 import:
 - package: github.com/BurntSushi/toml
 - package: github.com/ahmetalpbalkan/go-linq

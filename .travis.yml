@@ -3,7 +3,7 @@ dist: trusty
 language: go
 go:
   - 1.6
-go_import_path: github.com/zeroturnaround/configo
+go_import_path: github.com/bsideup/configo
 services: docker
 install:
   - >

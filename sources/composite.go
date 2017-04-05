@@ -3,7 +3,7 @@ package sources
 import (
 	"fmt"
 	. "github.com/ahmetalpbalkan/go-linq"
-	"github.com/zeroturnaround/configo/flatmap"
+	"github.com/bsideup/configo/flatmap"
 )
 
 type CompositeSource struct {
